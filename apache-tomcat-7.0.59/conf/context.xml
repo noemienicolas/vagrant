@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--
+  #%L
+  Logiciel de Gestion des approvisionnements et des stocks des fournitures administratives de la Mairie de
+          Nouméa
+  %%
+  Copyright (C) 2017 Mairie de Nouméa, Nouvelle-Calédonie
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/gpl-3.0.html>.
+  #L%
+  -->
+
+<Context reloadable="true" cookies="true">
+
+	<!-- Default set of monitored resources -->
+	<!-- <WatchedResource>WEB-INF/web.xml</WatchedResource> -->
+
+	<!-- Uncomment this to disable session persistence across Tomcat restarts -->
+	<!-- <Manager pathname="" /> -->
+
+	<!-- Uncomment this to enable Comet connection tacking (provides events 
+		on session expiration as well as webapp lifecycle) -->
+	<!-- <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" 
+		/> -->
+
+	<Resource name="jdbc/APPOCK"
+		auth="Container" 
+		type="javax.sql.DataSource"
+		description="Base de données d'APPOCK"
+		maxActive="100" 
+		maxIdle="30" 
+		minIdle="0" 
+		validationQuery="select 1"
+		maxWait="10000" 
+		initialSize="1" 
+		username="appock_adm"
+		password="changeme"
+		driverClassName="org.postgresql.Driver" 
+		url="jdbc:postgresql://localhost:5432/appock"
+		poolPreparedStatements="true" />
+
+	<!--  CONFIGURATION DE TEST, par exemple avec SMTP4DEV -->
+		<Resource
+		  name="mail/MailServer"
+		  auth="Container"
+		  type="javax.mail.Session"
+		  mail.debug="true"
+		  mail.transport.protocol="smtp"
+		  mail.smtp.host="localhost"
+		  mail.smtp.port="25"
+		  mail.smtp.auth="false"
+		/>
+
+		<!-- Configuré à value="true" les mails partent vers les vrais destinataires, configuré à value="false" les mails partent vers la personne connectée (et l'informent de qui serait le destinataire en "mode production") -->
+		<Environment name="mail/MailServerModeProduction" value="false" type="java.lang.Boolean" override="false"/>
+
+		<!-- Répertoire de stockage des pièces jointes -->
+		<Environment name="pieceJointeDir" value="/vagrant/apache-tomcat-7.0.59/temp" type="java.lang.String" />
+
+		<!-- Déclaration d’un classpath virtuel afin de pouvoir centraliser les fichiers de configuration de sécurité spring -->
+	<Loader className="org.apache.catalina.loader.VirtualWebappLoader" virtualClasspath="/vagrant/apache-tomcat-7.0.59/conf"/>
+        <!-- Déclaration de la variable "spring.security.dpmmc" précisant le chemin (dans le classpath) et le nom du fichier de configuration de la sécurité  -->
+        <Environment name="spring.security.appock" value="classpath:appock-spring-security.xml" type="java.lang.String"/>
+
+        <!-- -->
+        <!-- WS RADI -->
+        <!-- -->
+        <Environment name="RADI_WS_URL" type="java.lang.String"
+                                 description="SIRH ABS WS endpoint url" value="http://svi-tomcat0:8210/radi/"
+                                 override="false" />
+
+</Context>

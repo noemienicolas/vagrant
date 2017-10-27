@@ -1,5 +1,8 @@
 #! /bin/bash
 
+
+if [ ! -n "$JAVA_HOME" ]
+then
 sudo yum -y install postgresql-server postgresql-contrib
 sudo postgresql-setup initdb
 
@@ -11,10 +14,11 @@ sudo systemctl start postgresql
 sudo systemctl enable postgresql
 
 #on modifie le MDP
-#sudo -u postgres psql
+sudo -u postgres psql -c "alter user postgres password 'postgres';"
 #alter user postgres password 'postgres';
 #CREATE ROLE adminpg LOGIN SUPERUSER INHERIT CREATEDB NOCREATEROLE NOREPLICATION;
 #\q
+fi
 
 
 

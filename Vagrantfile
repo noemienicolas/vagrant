@@ -75,4 +75,8 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "scriptInstallLiquibase.sh"
   config.vm.provision "shell", path: "scriptInstallPostgres.sh"
   config.vm.provision "shell", path: "scriptMAJPath.sh"
+  config.vm.provision "shell", path: "lancementTomcat.sh"
+  
+  # Create a private network, which allows host-only access to the machine
+  config.vm.network "private_network", ip: "192.168.33.10"
 end

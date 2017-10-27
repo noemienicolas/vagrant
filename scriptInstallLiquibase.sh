@@ -1,6 +1,9 @@
 #! /bin/bash
 
 #Install liquibase
+
+if [ ! -n "$JAVA_HOME" ]
+then
 sudo mkdir /tmp/download
 TEMPORARY_DIRECTORY="/tmp/download"
 export LB_VERSION=3.5.3
@@ -18,3 +21,5 @@ sudo mv $TEMPORARY_DIRECTORY/liquibase* /usr/local/liquibase
 
 sudo rm -r "$TEMPORARY_DIRECTORY"
 echo 'Your Liquibase Installation is Complete.'
+
+fi

@@ -1,6 +1,9 @@
 #! /bin/bash
 
 #Install maven
+
+if [ ! -n "$JAVA_HOME" ]
+then
 sudo mkdir /tmp/download
 TEMPORARY_DIRECTORY="/tmp/download"
 export MVN_VERSION=3.5.0
@@ -31,3 +34,4 @@ echo 'The maven version: ' `mvn -version` ' has been installed.'
 echo -e '\n\n!! Note you must relogin to get mvn in your path !!'
 echo 'Removing the temporary directory...'
 echo 'Your Maven Installation is Complete.'
+fi

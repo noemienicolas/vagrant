@@ -17,6 +17,12 @@ sudo yum -y install mlocate
 sudo updatedb
 echo 'locate installed'
 
+
+
+
+if [ ! -n "$JAVA_HOME" ]
+then
+
 #mise à blanc fichier .bashrc
 echo -e '# .bashrc' > /home/vagrant/.bashrc
 echo -e '' >> /home/vagrant/.bashrc
@@ -27,6 +33,8 @@ echo -e 'fi' >> /home/vagrant/.bashrc
 echo -e '' >> /home/vagrant/.bashrc
 echo -e '# Uncomment the following line if you don t like systemctl s auto-paging feature:' >> /home/vagrant/.bashrc
 echo -e '# export SYSTEMD_PAGER=' >> /home/vagrant/.bashrc
+
+fi
 
 
 
