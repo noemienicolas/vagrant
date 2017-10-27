@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+ <!-- Parameters -->
+ <property name="password.appock_adm" value="changeme"/>
+ <property name="password.appock_usr" value="changeme"/>
+ <property name="password.appock_read" value="changeme"/>
+ <property name="password.appock_bo" value="changeme"/>
+ 
+ <property name="password.appock_qrtz_adm" value="changeme"/>
+ <property name="password.appock_qrtz_usr" value="changeme"/>
+ <property name="password.appock_qrtz_read" value="changeme"/>
+    
+ <!-- Pre-conditions (DBA Access required) -->
+ <preConditions>
+        <dbms type="postgresql" />
+	<runningAs username="postgres" />
+</preConditions>
+    
+
+<changeSet author="lemth83" id="create-role-appock_adm" runInTransaction="false">
+    <sql>drop ROLE IF EXISTS appock_adm</sql>
+    <sql>CREATE ROLE appock_adm  LOGIN ENCRYPTED PASSWORD '${password.appock_adm}' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="create-role-appock_usr" runInTransaction="false">
+    <sql>drop ROLE IF EXISTS appock_usr</sql>
+    <sql>CREATE ROLE appock_usr  LOGIN ENCRYPTED PASSWORD '${password.appock_usr}' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="create-role-appock_read" runInTransaction="false">
+    <sql>drop ROLE IF EXISTS appock_read</sql>
+    <sql>CREATE ROLE appock_read  LOGIN ENCRYPTED PASSWORD '${password.appock_read}' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="create-role-appock_bo" runInTransaction="false">
+    <sql>drop ROLE IF EXISTS appock_bo</sql>
+    <sql>CREATE ROLE appock_bo  LOGIN ENCRYPTED PASSWORD '${password.appock_bo}' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="create-schema-appock_adm" runInTransaction="false">
+    <sql>DROP SCHEMA if exists appock_adm</sql>
+    <sql>CREATE SCHEMA appock_adm AUTHORIZATION appock_adm</sql>
+    <sql>ALTER SCHEMA appock_adm OWNER TO appock_adm</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="update-search-path-appock_usr" runInTransaction="false">
+    <sql>ALTER USER appock_usr  SET search_path TO 'appock_adm'</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="update-search-path-appock_read" runInTransaction="false">
+    <sql>ALTER USER appock_read  SET search_path TO 'appock_adm'</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="update-search-path-appock_bo" runInTransaction="false">
+    <sql>ALTER USER appock_bo  SET search_path TO 'appock_adm'</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="grant-all-on-appock_adm-to-appock_adm" runInTransaction="false">
+    <sql>GRANT ALL ON SCHEMA appock_adm TO appock_adm</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="grant-usages-on-appock_adm" runInTransaction="false">
+    <sql>GRANT USAGE ON SCHEMA appock_adm TO appock_usr</sql>
+    <sql>GRANT USAGE ON SCHEMA appock_adm TO appock_read</sql>
+    <sql>GRANT USAGE ON SCHEMA appock_adm TO appock_bo</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="grant-default-privileges" runInTransaction="false">
+    <sql>ALTER DEFAULT PRIVILEGES FOR ROLE appock_adm IN SCHEMA appock_adm GRANT SELECT,INSERT,UPDATE,DELETE ON TABLES TO appock_usr</sql>
+    <sql>ALTER DEFAULT PRIVILEGES FOR ROLE appock_adm IN SCHEMA appock_adm GRANT SELECT,UPDATE ON SEQUENCES TO appock_usr</sql>
+    
+    <sql>ALTER DEFAULT PRIVILEGES FOR ROLE appock_adm IN SCHEMA appock_adm GRANT SELECT ON TABLES TO appock_read</sql>
+    <sql>ALTER DEFAULT PRIVILEGES FOR ROLE appock_adm IN SCHEMA appock_adm GRANT SELECT ON SEQUENCES TO appock_read</sql>
+    
+    <sql>ALTER DEFAULT PRIVILEGES FOR ROLE appock_adm IN SCHEMA appock_adm GRANT SELECT ON TABLES TO appock_bo</sql>
+    <sql>ALTER DEFAULT PRIVILEGES FOR ROLE appock_adm IN SCHEMA appock_adm GRANT SELECT ON SEQUENCES TO appock_bo</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="appock_password_reminder" runInTransaction="false">
+<comment>Think about updating appock_adm, appock_usr and appock_read passwords !!!</comment>
+</changeSet>
+
+ <!-- Création du schema appock_qrtz_adm -->
+  <changeSet author="lemth83" id="create-appock_qrtz_adm" runInTransaction="false">
+    <sql>drop ROLE IF EXISTS appock_qrtz_adm</sql>
+    <sql>CREATE ROLE appock_qrtz_adm  LOGIN ENCRYPTED PASSWORD '${password.appock_qrtz_adm}' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION</sql>
+</changeSet>
+
+
+<changeSet author="lemth83" id="create-role-appock_qrtz_usr" runInTransaction="false">
+    <sql>drop ROLE IF EXISTS appock_qrtz_usr</sql>
+    <sql>CREATE ROLE appock_qrtz_usr  LOGIN ENCRYPTED PASSWORD '${password.appock_qrtz_usr}' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="create-role-appock_qrtz_read" runInTransaction="false">
+    <sql>drop ROLE IF EXISTS appock_qrtz_read</sql>
+    <sql>CREATE ROLE appock_qrtz_read  LOGIN ENCRYPTED PASSWORD '${password.appock_qrtz_read}' NOSUPERUSER INHERIT NOCREATEDB NOCREATEROLE NOREPLICATION</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="create-schema-appock_qrtz_adm" runInTransaction="false">
+    <sql>DROP SCHEMA if exists appock_qrtz_adm</sql>
+    <sql>CREATE SCHEMA appock_qrtz_adm AUTHORIZATION appock_qrtz_adm</sql>
+    <sql>ALTER SCHEMA appock_qrtz_adm OWNER TO appock_qrtz_adm</sql>
+</changeSet>
+ 
+<changeSet author="lemth83" id="update-search-path-appock_qrtz_usr" runInTransaction="false">
+    <sql>ALTER USER appock_qrtz_usr  SET search_path TO 'appock_qrtz_adm'</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="update-search-path-appock_qrtz_read" runInTransaction="false">
+    <sql>ALTER USER appock_qrtz_read  SET search_path TO 'appock_qrtz_adm'</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="grant-all-on-appock_qrtz_adm-to-appock_qrtz_adm" runInTransaction="false">
+    <sql>GRANT ALL ON SCHEMA appock_qrtz_adm TO appock_qrtz_adm</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="grant-usages-on-appock_qrtz_adm" runInTransaction="false">
+    <sql>GRANT USAGE ON SCHEMA appock_qrtz_adm TO appock_qrtz_usr</sql>
+    <sql>GRANT USAGE ON SCHEMA appock_qrtz_adm TO appock_qrtz_read</sql>
+</changeSet>
+
+<changeSet author="lemth83" id="grant-default-privileges_appock_qrtz" runInTransaction="false">
+    <sql>ALTER DEFAULT PRIVILEGES FOR ROLE appock_qrtz_adm IN SCHEMA appock_qrtz_adm GRANT SELECT,INSERT,UPDATE,DELETE ON TABLES TO appock_qrtz_usr</sql>
+    <sql>ALTER DEFAULT PRIVILEGES FOR ROLE appock_qrtz_adm IN SCHEMA appock_qrtz_adm GRANT SELECT,UPDATE ON SEQUENCES TO appock_qrtz_usr</sql>
+    
+    <sql>ALTER DEFAULT PRIVILEGES FOR ROLE appock_qrtz_adm IN SCHEMA appock_adm GRANT SELECT ON TABLES TO appock_qrtz_read</sql>
+    <sql>ALTER DEFAULT PRIVILEGES FOR ROLE appock_qrtz_adm IN SCHEMA appock_adm GRANT SELECT ON SEQUENCES TO appock_qrtz_read</sql>
+</changeSet>
+
+
+ <!-- Grant usage on qartz table to appock_usr -->
+ <changeSet author="lemth83" id="grant-usages-on-appock_qrtz_adm-to-appock_usr" runInTransaction="false">
+    <sql>ALTER USER appock_usr SET search_path TO appock_adm,appock_qrtz_adm</sql>
+    <sql>grant USAGE on SCHEMA appock_qrtz_adm to appock_usr</sql>
+    <sql>GRANT SELECT, UPDATE, DELETE ON ALL TABLES IN SCHEMA appock_qrtz_adm TO appock_usr</sql>
+    <sql>GRANT SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA appock_qrtz_adm TO appock_usr</sql>
+</changeSet>
+
+ <!-- grants pour le user applicatif appock_usr        -->
+ <!-- grant sur toutes les tables de appock_adm a appock_usr -->
+  <changeSet author="lemth83" id="grants-all-to-appock_usr_tables" runAlways="true" failOnError="false">
+    <comment>GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA appock_adm TO appock_usr</comment>
+    <sql>GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA appock_adm TO appock_usr</sql>
+  </changeSet>
+ 
+  <!-- grant sur toutes les sequences de appock_adm a appock_usr -->
+  <changeSet author="lemth83" id="grants-all-to-appock_usr_sequences" runAlways="true" failOnError="false">
+    <comment>GRANT SELECT,UPDATE ON ALL SEQUENCES IN SCHEMA appock_adm TO appock_usr</comment>
+    <sql>GRANT SELECT,UPDATE ON ALL SEQUENCES IN SCHEMA appock_adm TO appock_usr</sql>
+  </changeSet>
+  
+  
+  <!-- grants pour le user de lecture seule appock_read -->
+  <changeSet author="lemth83" id="grants-read-to-appock_read_tables" runAlways="true" failOnError="false">
+    <comment>GRANT SELECT ON ALL TABLES IN SCHEMA appock_adm TO appock_read</comment>
+    <sql>GRANT SELECT ON ALL TABLES IN SCHEMA appock_adm TO appock_read</sql>
+  </changeSet>
+  
+  <changeSet author="lemth83" id="grants-read-to-appock_read_sequences" runAlways="true" failOnError="false">
+    <comment>GRANT SELECT ON ALL SEQUENCES IN SCHEMA appock_adm TO appock_read</comment>
+    <sql>GRANT SELECT ON ALL SEQUENCES IN SCHEMA appock_adm TO appock_read</sql>
+  </changeSet>
+
+</databaseChangeLog>

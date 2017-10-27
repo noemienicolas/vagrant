@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="AgileSoft.NC" id="update_sequence_config">
+        <sql>ALTER SEQUENCE s_config RESTART WITH 3;</sql>
+        <update tableName="config">
+            <column name="id" value="2"/>
+            <where>id=25</where>
+        </update>
+        <sql>ALTER SEQUENCE s_photo_article RENAME TO s_photo_article_catalogue;</sql>
+        <renameTable newTableName="photo_article_catalogue" oldTableName="photo_article"/>
+        <sql>ALTER SEQUENCE s_article RENAME TO s_article_catalogue;</sql>
+        <renameTable newTableName="article_catalogue" oldTableName="article"/>
+        <renameColumn newColumnName="photo_article_catalogue" oldColumnName="photo_article"
+                      tableName="article_catalogue"/>
+        <sql>ALTER TABLE article_catalogue RENAME CONSTRAINT article_pkey TO article_catalogue_pkey;</sql>
+        <sql>ALTER TABLE photo_article_catalogue RENAME CONSTRAINT photo_article_pkey TO photo_article_catalogue_pkey;
+        </sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_user_liste_role_supplementaire">
+        <sql dbms="postgresql">
+            <![CDATA[
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='lemth83'), (select id from enum_role where name='ROLE_REFERENT_ACHATS'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='lemth83'), (select id from enum_role where name='ROLE_REFERENT_SERVICE'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='fauch75'), (select id from enum_role where name='ROLE_REFERENT_ACHATS'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='fauch75'), (select id from enum_role where name='ROLE_REFERENT_SERVICE'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='wilga59'), (select id from enum_role where name='ROLE_REFERENT_ACHATS'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='wilga59'), (select id from enum_role where name='ROLE_REFERENT_SERVICE'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='apps-test'), (select id from enum_role where name='ROLE_REFERENT_ACHATS'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='apps-test'), (select id from enum_role where name='ROLE_REFERENT_SERVICE'));
+			]]>
+        </sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_catalogue_enum_etat_catalogue">
+        <addColumn tableName="catalogue">
+            <column name="etat_catalogue" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_enum_etat_catalogue">
+        <createSequence sequenceName="s_enum_etat_catalogue" minValue="0" startValue="0"/>
+        <createTable tableName="enum_etat_catalogue">
+            <column name="id" type="INT4" defaultValueComputed="nextval('s_enum_etat_catalogue')"/>
+            <column name="name" type="VARCHAR2(40)"/>
+        </createTable>
+        <addPrimaryKey tableName="enum_etat_catalogue" columnNames="id"/>
+
+        <insert tableName="enum_etat_catalogue">
+            <column name="name" value="ACTIF"/>
+        </insert>
+        <insert tableName="enum_etat_catalogue">
+            <column name="name" value="EN_COURS_DE_PREPARATION"/>
+        </insert>
+        <insert tableName="enum_etat_catalogue">
+            <column name="name" value="ARCHIVE"/>
+        </insert>
+
+        <addForeignKeyConstraint
+                constraintName="fk_catalogue_enum_etat_catalogue_id"
+                baseTableName="catalogue" baseColumnNames="etat_catalogue"
+                referencedTableName="enum_etat_catalogue" referencedColumnNames="id"
+                />
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_panier">
+        <createSequence sequenceName="s_panier" minValue="0" startValue="0"/>
+        <createTable tableName="panier" remarks="Table des paniers">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_panier')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="panier_pkey" tableName="panier"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_demande">
+        <createSequence sequenceName="s_demande" minValue="0" startValue="0"/>
+        <createTable tableName="demande" remarks="Table des demandes">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_demande')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="service" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_creation" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_user" type="VARCHAR(15)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="numero" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="demande_pkey" tableName="demande"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_article">
+        <createSequence sequenceName="s_article" minValue="0" startValue="0"/>
+        <createTable tableName="article" remarks="Table des articles au sein d'un panier ou d'une demande">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_article')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="article_catalogue" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="panier" type="INT8"/>
+            <column name="demande" type="INT8"/>
+            <column name="quantite" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="article_pkey" tableName="article"/>
+        <addForeignKeyConstraint baseColumnNames="article_catalogue" baseTableName="article"
+                                 constraintName="fk_article_catalogue_panier_article_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="article_catalogue"/>
+        <addForeignKeyConstraint baseColumnNames="panier" baseTableName="article"
+                                 constraintName="fk_article_panier_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="panier"/>
+        <addForeignKeyConstraint baseColumnNames="demande" baseTableName="article"
+                                 constraintName="fk_article_demande_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="demande"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_type_colisage">
+        <createSequence sequenceName="s_type_colisage" minValue="0" startValue="0"/>
+        <createTable tableName="type_colisage" remarks="Table des types de colisage">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_type_colisage')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="type_colisage_pkey" tableName="type_colisage"/>
+        <addUniqueConstraint columnNames="libelle" constraintName="uk_type_colisage_libelle" deferrable="false"
+                             disabled="false"
+                             initiallyDeferred="false" tableName="type_colisage"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="catalogue_ajout_date_creation">
+        <addColumn tableName="catalogue">
+            <column name="date_creation" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="ajout_article_catalogue_type_colisage">
+        <dropColumn tableName="article_catalogue">
+            <column name="unite_colisage"/>
+        </dropColumn>
+        <addColumn tableName="article_catalogue">
+            <column name="type_colisage" type="INT8"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="type_colisage" baseTableName="article_catalogue"
+                                 constraintName="fk_type_colisage_article_catalogue_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="type_colisage"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="ajout_article_catalogue_actif">
+        <addColumn tableName="article_catalogue">
+            <column name="actif" type="boolean" defaultValue="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_type_colisage">
+        <sql dbms="postgresql">
+            <![CDATA[
+				insert into type_colisage(id, libelle, version) values (nextval('s_type_colisage'), 'RAMETTE', 0);
+				insert into type_colisage(id, libelle, version) values (nextval('s_type_colisage'), 'PAQUET', 0);
+				insert into type_colisage(id, libelle, version) values (nextval('s_type_colisage'), 'ROULEAU', 0);
+				insert into type_colisage(id, libelle, version) values (nextval('s_type_colisage'), 'BOITE', 0);
+				insert into type_colisage(id, libelle, version) values (nextval('s_type_colisage'), 'BLOC', 0);
+				insert into type_colisage(id, libelle, version) values (nextval('s_type_colisage'), 'BOBINE', 0);
+				insert into type_colisage(id, libelle, version) values (nextval('s_type_colisage'), 'LOT', 0);
+				insert into type_colisage(id, libelle, version) values (nextval('s_type_colisage'), 'SACHET', 0);
+				insert into type_colisage(id, libelle, version) values (nextval('s_type_colisage'), 'BLISTER', 0);
+				insert into type_colisage(id, libelle, version) values (nextval('s_type_colisage'), 'CARTON', 0);
+				insert into type_colisage(id, libelle, version) values (nextval('s_type_colisage'), 'UNITE', 0);
+			]]>
+        </sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="ajout_sous_marche_attributaire">
+        <addColumn tableName="sous_marche">
+            <column name="attributaire" type="VARCHAR(200)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_dtype_article">
+        <addColumn tableName="article">
+            <column name="dtype_article_id" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <addLookupTable constraintName="fk_dtype_article"
+                        existingColumnName="dtype_article_id" existingTableName="article"
+                        newColumnDataType="BIGINT" newColumnName="id" newTableName="dtype_article"/>
+
+        <createSequence sequenceName="s_dtype_article" startValue="3"/>
+        <addDefaultValue tableName="dtype_article" columnName="id"
+                         defaultValueComputed="nextval('s_dtype_article')"/>
+
+        <modifyDataType tableName="dtype_article" columnName="id" newDataType="integer"/>
+
+        <!-- Ajout d'une colonne classe (informative) -->
+        <addColumn tableName="dtype_article">
+            <column name="classe" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <insert tableName="dtype_article">
+            <column name="id" value="1"/>
+            <column name="classe" value="ArticleDemande"/>
+        </insert>
+        <insert tableName="dtype_article">
+            <column name="id" value="2"/>
+            <column name="classe" value="ArticlePanier"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_table_config_email">
+        <insert tableName="config">
+            <column name="id" valueSequenceNext="s_config"/>
+            <column name="cle" value="ENCODAGE_SUJET_EMAIL"/>
+            <column name="description" value="Encodage pour le sujet des emails"/>
+            <column name="technique" value="true"/>
+            <column name="type_config" value="0"/>
+            <column name="valeur" value="UTF-8"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+
+        <insert tableName="config">
+            <column name="id" valueSequenceNext="s_config"/>
+            <column name="cle" value="DEFAULT_FROM_EMAIL_ADDRESS"/>
+            <column name="description" value="Adresse utilisée par défaut sur l'envoi de mails"/>
+            <column name="technique" value="false"/>
+            <column name="type_config" value="0"/>
+            <column name="valeur" value="appock@ville-noumea.nc"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+
+        <insert tableName="config">
+            <column name="id" valueSequenceNext="s_config"/>
+            <column name="cle" value="PIED_DE_MAIL"/>
+            <column name="description" value="Pied de mail"/>
+            <column name="technique" value="false"/>
+            <column name="type_config" value="1"/>
+            <column name="valeur"
+                    value="Cordialement,&lt;br/&gt;Le bureau des achats de la Mairie de Nouméa&lt;br/&gt;&lt;font color='#888' size='1'&gt;Ce courriel est envoyé automatiquement par l'application APPOCK. Merci de ne pas y répondre directement.&lt;br/&gt;Pour toutes questions vous pouvez utiliser l'adresse suivante : &lt;a href='mailto:gaetan.willemot@ville-noumea.nc'&gt;gaetan.willemot@ville-noumea.nc&lt;a/&gt;&lt;font/&gt;"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_demande_enum_etat_demande">
+        <addColumn tableName="demande">
+            <column name="etat_demande" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_enum_etat_demande">
+        <createSequence sequenceName="s_enum_etat_demande" minValue="0" startValue="0"/>
+        <createTable tableName="enum_etat_demande">
+            <column name="id" type="INT4" defaultValueComputed="nextval('s_enum_etat_demande')"/>
+            <column name="name" type="VARCHAR2(40)"/>
+        </createTable>
+        <addPrimaryKey tableName="enum_etat_demande" columnNames="id"/>
+
+        <insert tableName="enum_etat_demande">
+            <column name="name" value="CREE"/>
+        </insert>
+        <insert tableName="enum_etat_demande">
+            <column name="name" value="EN_ATTENTE_TRAITEMENT"/>
+        </insert>
+        <insert tableName="enum_etat_demande">
+            <column name="name" value="VALIDE"/>
+        </insert>
+        <insert tableName="enum_etat_demande">
+            <column name="name" value="REJETE"/>
+        </insert>
+        <addForeignKeyConstraint
+                constraintName="fk_catalogue_enum_etat_demande_id"
+                baseTableName="demande" baseColumnNames="etat_demande"
+                referencedTableName="enum_etat_demande" referencedColumnNames="id"
+                />
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="ajout_service_actif">
+        <addColumn tableName="service">
+            <column name="actif" type="boolean" defaultValue="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_favori">
+        <createSequence sequenceName="s_favori" minValue="0" startValue="0"/>
+        <createTable tableName="favori" remarks="Table des articles favoris">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_favori')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="article_catalogue" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="app_user" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="favori_pkey" tableName="favori"/>
+        <addForeignKeyConstraint baseColumnNames="article_catalogue" baseTableName="favori"
+                                 constraintName="fk_favori_article_catalogue_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="article_catalogue"/>
+        <addForeignKeyConstraint baseColumnNames="app_user" baseTableName="favori"
+                                 constraintName="fk_favori_app_user_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="app_user"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="tag1.02.00">
+        <tagDatabase tag="1.02.00"/>
+    </changeSet>
+</databaseChangeLog>

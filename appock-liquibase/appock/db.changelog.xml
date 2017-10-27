@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <include file="db.changelog-appock-1.01.00-mime-type.xml"/>
+    <include file="db.changelog-appock-1.01.00.xml"/>
+    <include file="db.changelog-appock-1.02.00.xml"/>
+    <include file="db.changelog-appock-1.03.00.xml"/>
+    <include file="db.changelog-appock-1.04.00.xml"/>
+    <include file="db.changelog-appock-1.05.00.xml"/>
+    <include file="db.changelog-appock-1.06.00.xml"/>
+    <include file="db.changelog-appock-1.06.01.xml"/>
+    <include file="db.changelog-appock-1.06.02.xml"/>
+    <include file="db.changelog-appock-1.06.03.xml"/>
+
+    <!-- Traitement de fin de changelog -->
+    <include file="db.changelog-appock-post-always.xml"/>
+</databaseChangeLog>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="AgileSoft.NC" id="delete_all">
+        <sql>delete from panier</sql>
+        <sql>delete from demande</sql>
+        <sql>delete from article</sql>
+        <sql>delete from article_catalogue</sql>
+        <sql>delete from sous_famille</sql>
+        <sql>delete from catalogue</sql>
+        <sql>delete from sous_marche</sql>
+        <sql>delete from marche</sql>
+        <sql>delete from photo_article_catalogue</sql>
+        <sql>delete from favori</sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="article-add-quantite-commande">
+        <addColumn tableName="article">
+            <column name="quantite_commande" type="INT4"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_article_enum_etat_article_demande">
+        <addColumn tableName="article">
+            <column name="etat_article_demande" type="INT4"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_enum_etat_article_demande">
+        <createSequence sequenceName="s_enum_etat_article_demande" minValue="0" startValue="0"/>
+        <createTable tableName="enum_etat_article_demande">
+            <column name="id" type="INT4" defaultValueComputed="nextval('s_enum_etat_article_demande')"/>
+            <column name="name" type="VARCHAR2(40)"/>
+        </createTable>
+        <addPrimaryKey tableName="enum_etat_article_demande" columnNames="id"/>
+
+        <insert tableName="enum_etat_article_demande">
+            <column name="name" value="VALIDE"/>
+        </insert>
+        <insert tableName="enum_etat_article_demande">
+            <column name="name" value="REJETE"/>
+        </insert>
+        <addForeignKeyConstraint
+                constraintName="fk_catalogue_enum_etat_article_demande_id"
+                baseTableName="article" baseColumnNames="etat_article_demande"
+                referencedTableName="enum_etat_article_demande" referencedColumnNames="id"
+                />
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_commande">
+        <createSequence sequenceName="s_commande" minValue="0" startValue="0"/>
+        <createTable tableName="commande" remarks="Table des commandes">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_commande')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_creation" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="create_user" type="VARCHAR(15)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="numero" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="etat_commande" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="commande_pkey" tableName="commande"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_commande_table_demande">
+        <addColumn tableName="demande">
+            <column name="commande" type="INT8"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="commande" baseTableName="demande"
+                                 constraintName="fk_demande_commande_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="commande"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_enum_etat_commande">
+        <createSequence sequenceName="s_enum_etat_commande" minValue="0" startValue="0"/>
+        <createTable tableName="enum_etat_commande">
+            <column name="id" type="INT4" defaultValueComputed="nextval('s_enum_etat_commande')"/>
+            <column name="name" type="VARCHAR2(40)"/>
+        </createTable>
+        <addPrimaryKey tableName="enum_etat_commande" columnNames="id"/>
+
+        <insert tableName="enum_etat_commande">
+            <column name="name" value="EN_COURS_DE_PREPARATION"/>
+        </insert>
+        <addForeignKeyConstraint
+                constraintName="fk_commande_enum_etat_commande_id"
+                baseTableName="commande" baseColumnNames="etat_commande"
+                referencedTableName="enum_etat_commande" referencedColumnNames="id"
+                />
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="maj_enum_etat_demande">
+        <delete tableName="enum_etat_demande">
+            <where>name='REJETE'</where>
+        </delete>
+        <update tableName="enum_etat_demande">
+            <column name="name" value="TRAITE"/>
+            <where>name='VALIDE'</where>
+        </update>
+        <sql>ALTER SEQUENCE s_enum_etat_demande RESTART WITH 3;</sql>
+        <insert tableName="enum_etat_demande">
+            <column name="name" value="EN_COURS_COMMANDE"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_demande_date_transmission">
+        <addColumn tableName="demande">
+            <column name="date_transmission" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="modify_size_demande_commande_create_user">
+        <modifyDataType tableName="demande" columnName="create_user" newDataType="VARCHAR(200)"/>
+        <modifyDataType tableName="commande" columnName="create_user" newDataType="VARCHAR(200)"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_app_user">
+        <addColumn tableName="app_user">
+            <column name="poste" type="VARCHAR(30)"/>
+            <column name="titulaire" type="boolean" defaultValue="true">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_service_telephone">
+        <addColumn tableName="service">
+            <column name="telephone" type="VARCHAR(30)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_sous_marche_numero">
+        <addColumn tableName="sous_marche">
+            <column name="numero" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_demande_transmet_user">
+        <addColumn tableName="demande">
+            <column name="transmet_user" type="VARCHAR(200)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_demande_date_traitement">
+        <addColumn tableName="demande">
+            <column name="date_traitement" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_demande_traitement_user">
+        <addColumn tableName="demande">
+            <column name="traitement_user" type="VARCHAR(200)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_demande_transmet_login">
+        <addColumn tableName="demande">
+            <column name="transmet_login" type="VARCHAR(20)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="update_app_user_test">
+        <update tableName="app_user">
+            <column name="nom" value="LEMAIRE"/>
+            <column name="prenom" value="Thomas"/>
+            <column name="email" value="thomas.lemaire@agilesoft.nc"/>
+            <where>login='apps-test'</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="sous_marche_add_not_null_attributaire">
+        <addNotNullConstraint tableName="sous_marche" columnName="attributaire"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_commande_date_passage_commande">
+        <addColumn tableName="commande">
+            <column name="date_passage_commande" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="tag1.03.00">
+        <tagDatabase tag="1.03.00"/>
+    </changeSet>
+</databaseChangeLog>

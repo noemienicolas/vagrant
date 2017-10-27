@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="AgileSoft.NC" id="delete_all">
+        <sql>delete from article</sql>
+        <sql>delete from panier</sql>
+        <sql>delete from favori</sql>
+        <sql>delete from demande</sql>
+        <sql>delete from commande_service</sql>
+        <sql>delete from commande</sql>
+        <sql>delete from article_catalogue</sql>
+        <sql>delete from sous_famille</sql>
+        <sql>delete from famille</sql>
+        <sql>delete from catalogue</sql>
+        <sql>delete from photo_article_catalogue</sql>
+        <sql>delete from bon_livraison</sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_stock">
+        <createSequence sequenceName="s_stock" minValue="0" startValue="0"/>
+        <createTable tableName="stock"
+                     remarks="Table des stocks">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_stock')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="stock_pkey" tableName="stock"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_dtype_article_stock">
+        <insert tableName="dtype_article">
+            <column name="id" value="4"/>
+            <column name="classe" value="ArticleStock"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="ajout_article_stock_quantite_stock">
+        <addColumn tableName="article">
+            <column name="quantite_stock" type="INT4"/>
+            <column name="stock" type="INT8"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="stock" baseTableName="article"
+                                 constraintName="fk_stock_article_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="stock"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="ajout_service_stock">
+        <addColumn tableName="service">
+            <column name="stock" type="INT8"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="stock" baseTableName="service"
+                                 constraintName="fk_service_stock_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="stock"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="drop_not_null_constraint_article_article_catalogue">
+        <dropNotNullConstraint tableName="article" columnName="article_catalogue"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_index">
+        <createIndex indexName="idx_article_catalogue_libelle" tableName="article_catalogue">
+            <column name="libelle"/>
+        </createIndex>
+        <createIndex indexName="idx_article_catalogue_reference" tableName="article_catalogue">
+            <column name="reference"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_mouvement_stock">
+        <createSequence sequenceName="s_mouvement_stock" minValue="0" startValue="0"/>
+        <createTable tableName="mouvement_stock" remarks="Table des mouvements de stocks">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_mouvement_stock')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="stock" type="INT8"/>
+            <column name="observation" type="VARCHAR2(4000)"/>
+            <column name="type_mouvement_stock" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference" type="VARCHAR2(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="old_quantite_stock" type="INT4"/>
+            <column name="new_quantite_stock" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_mouvement" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="mouvement_user" type="VARCHAR2(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="mouvement_stock_pkey" tableName="mouvement_stock"/>
+        <addForeignKeyConstraint baseColumnNames="stock" baseTableName="mouvement_stock"
+                                 constraintName="fk_mouvement_stock_stock_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="stock"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_enum_type_mouvement_stock">
+        <createSequence sequenceName="s_enum_type_mouvement_stock" minValue="0" startValue="0"/>
+        <createTable tableName="enum_type_mouvement_stock">
+            <column name="id" type="INT4" defaultValueComputed="nextval('s_enum_type_mouvement_stock')"/>
+            <column name="name" type="VARCHAR2(40)"/>
+        </createTable>
+        <addPrimaryKey tableName="enum_type_mouvement_stock" columnNames="id"/>
+
+        <insert tableName="enum_type_mouvement_stock">
+            <column name="name" value="ENTREE"/>
+        </insert>
+        <insert tableName="enum_type_mouvement_stock">
+            <column name="name" value="SORTIE"/>
+        </insert>
+        <insert tableName="enum_type_mouvement_stock">
+            <column name="name" value="NOUVEL_ARTICLE"/>
+        </insert>
+        <addForeignKeyConstraint
+                constraintName="fk_mouvement_stock_enum_type_mouvement_stock_id"
+                baseTableName="mouvement_stock" baseColumnNames="type_mouvement_stock"
+                referencedTableName="enum_type_mouvement_stock" referencedColumnNames="id"
+                />
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_commande_service_reception_login">
+        <addColumn tableName="commande_service">
+            <column name="reception_login" type="VARCHAR(20)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_type_config_fichier">
+        <insert tableName="enum_type_config">
+            <column name="name" value="FICHIER"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_table_config_fichier_aide">
+        <insert tableName="config">
+            <column name="id" valueSequenceNext="s_config"/>
+            <column name="cle" value="FICHIER_AIDE"/>
+            <column name="description"
+                    value="Fichier pdf de documentation utilisateur"/>
+            <column name="technique" value="false"/>
+            <column name="type_config" value="2"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_fichier_documentation_utilisateur">
+        <createSequence sequenceName="s_fichier_documentation_utilisateur" minValue="0" startValue="0"/>
+        <createTable tableName="fichier_documentation_utilisateur"
+                     remarks="Table du fichier de la documentation utilisateur (le contenu des fichiers est stocké hors base de données)">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_fichier_documentation_utilisateur')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="md5" type="VARCHAR(32)"/>
+            <column name="mime_type" type="INT8"/>
+            <column name="nom_fichier" type="VARCHAR(500)"/>
+            <column name="taille_fichier" type="BIGINT"></column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="fichier_documentation_utilisateur_pkey"
+                       tableName="fichier_documentation_utilisateur"/>
+        <addForeignKeyConstraint baseColumnNames="mime_type" baseTableName="fichier_documentation_utilisateur"
+                                 constraintName="fk_fichier_documentation_utilisateur_mime_type_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="mime_type"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_config_fichier_documentation_utilisateur">
+        <addColumn tableName="config">
+            <column name="fichier_documentation_utilisateur" type="INT8"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="fichier_documentation_utilisateur" baseTableName="config"
+                                 constraintName="fk_config_fichier_documentation_utilisateur_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="fichier_documentation_utilisateur"/>
+    </changeSet>
+    <changeSet author="AgileSoft.NC" id="add_quantite_renseigne_mouvement_stock">
+        <addColumn tableName="mouvement_stock">
+            <column name="quantite_renseigne" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_notion_inventaire_stock">
+        <addColumn tableName="stock">
+            <column name="date_dernier_inventaire" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="inventaire_demande" type="boolean" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_inventaire_user_stock">
+        <addColumn tableName="stock">
+            <column name="inventaire_user" type="VARCHAR(200)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_date_derniere_demande_inventaire_stock">
+        <addColumn tableName="stock">
+            <column name="date_derniere_demande_inventaire" type="TIMESTAMP WITH TIME ZONE"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="tag1.05.00">
+        <tagDatabase tag="1.05.00"/>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,1279 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="AgileSoft.NC" id="create_table_mime_type">
+
+        <createSequence sequenceName="s_mime_type"/>
+
+        <createTable tableName="mime_type" remarks="Table de référence des type mime utilisés dans apppock">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_mime_type')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(80)"/>
+            <column name="version" type="INT4" defaultValue="0"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="mime_type_pkey" tableName="mime_type"/>
+        <addNotNullConstraint tableName="mime_type" columnName="libelle"/>
+        <addNotNullConstraint tableName="mime_type" columnName="version"/>
+
+        <!-- valeur particulière demandée par la DSI -->
+        <insert tableName="mime_type">
+            <column name="libelle" value="unknown"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="x-world/x-3dmf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="x-world/x-3dmf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/octet-stream"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-authorware-bin"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-authorware-map"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-authorware-seg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/vnd.abc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/html"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/animaflex"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/postscript"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/aiff"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-aiff"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-aim"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-audiosoft-intra"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-navi-animation"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-nokia-9000-communicator-add-on-software"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/mime"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/arj"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-jg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-ms-asf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-asm"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/asp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-mplayer2"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-ms-asf-plugin"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/basic"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-au"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-troff-msvideo"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/avi"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/msvideo"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-msvideo"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/avs-video"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-bcpio"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/mac-binary"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/macbinary"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-binary"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-macbinary"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/bmp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-windows-bmp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/book"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-bzip2"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-bsh"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-bzip"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/plain"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-c"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.ms-pki.seccat"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/clariscad"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-cocoa"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/cdf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-cdf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-netcdf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/pkix-cert"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-x509-ca-cert"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-chat"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/java"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/java-byte-code"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-java-class"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-cpio"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/mac-compactpro"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-compactpro"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-cpt"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/pkcs-crl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/pkix-crl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-x509-user-cert"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-csh"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.csh"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-pointplus"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/css"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-director"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-deepv"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-dv"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/dl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-dl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/msword"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/commonground"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/drafting"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-dvi"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="drawing/x-dwf (old)"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="model/vnd.dwf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/acad"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/vnd.dwg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-dwg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/dxf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.elisp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-bytecode.elisp (compiled elisp)"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-elc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-envoy"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-esrehber"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-setext"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/envoy"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-fortran"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.fdf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/fractals"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/fif"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/fli"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-fli"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/florian"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/vnd.fmi.flexstor"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-atomic3d-feature"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/vnd.fpx"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/vnd.net-fpx"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/freeloader"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/make"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/g3fax"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/gif"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/gl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-gl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-gsm"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-gsp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-gss"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-gtar"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-compressed"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-gzip"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="multipart/x-gzip"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-h"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-hdf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-helpfile"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.hp-hpgl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/hlp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-winhelp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/binhex"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/binhex4"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/mac-binhex"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/mac-binhex40"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-binhex40"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-mac-binhex40"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/hta"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-component"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/webviewhtml"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="x-conference/x-cooltalk"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-icon"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/ief"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/iges"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="model/iges"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-ima"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-httpd-imap"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/inf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-internett-signup"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-ip2"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-isvideo"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/it"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-inventor"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="i-world/i-vrml"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-livescreen"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-jam"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-java-source"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-java-commerce"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/jpeg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/pjpeg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-jps"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-javascript"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/javascript"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/ecmascript"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/javascript"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/ecmascript"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/jutvision"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/midi"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="music/x-karaoke"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-ksh"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.ksh"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/nspaudio"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-nspaudio"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-liveaudio"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-latex"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/lha"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-lha"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-lisp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.lisp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-la-asf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-lzh"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/lzx"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-lzx"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-m"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/mpeg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/mpeg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-mpequrl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-troff-man"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-navimap"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/mbedlet"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-magic-cap-package-1.0"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/mcad"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-mathcad"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/vasa"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/mcf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/netmc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-troff-me"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="message/rfc822"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-midi"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-mid"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-midi"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="music/crescendo"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="x-music/x-midi"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-frame"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-mif"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="www/mime"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-vnd.audioexplosion.mjuicemediafile"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-motion-jpeg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/base64"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-meme"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/mod"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-mod"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/quicktime"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-sgi-movie"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-mpeg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-mpeg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-mpeq2a"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/mpeg3"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-mpeg-3"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-project"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.ms-project"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/marc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-troff-ms"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-vnd.audioexplosion.mzz"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/naplps"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.nokia.configuration-message"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-niff"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-mix-transfer"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-conference"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-navidoc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/oda"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-omc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-omcdatamaker"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-omcregerator"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-pascal"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/pkcs10"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-pkcs10"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/pkcs-12"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-pkcs12"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-pkcs7-signature"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/pkcs7-mime"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-pkcs7-mime"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-pkcs7-certreqresp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/pkcs7-signature"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/pro_eng"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/pascal"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-portable-bitmap"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.hp-pcl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-pcl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-pict"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-pcx"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="chemical/x-pdb"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/pdf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/make.my.funk"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-portable-graymap"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-portable-greymap"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/pict"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-newton-compatible-pkg"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.ms-pki.pko"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.perl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-pixclscript"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-xpixmap"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.perl-module"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-pagemaker"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/png"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-portable-anymap"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-portable-anymap"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/mspowerpoint"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.ms-powerpoint"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="model/x-pov"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-portable-pixmap"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/powerpoint"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-mspowerpoint"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-freelance"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="paleovu/x-pv"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.phyton"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-bytecode.python"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/vnd.qcelp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-quicktime"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-qtc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-pn-realaudio"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-pn-realaudio-plugin"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-realaudio"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-cmu-raster"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/cmu-raster"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-cmu-raster"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.rexx"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/vnd.rn-realflash"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-rgb"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.rn-realmedia"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/mid"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/ringing-tones"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.nokia.ringing-tone"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.rn-realplayer"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-troff"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/vnd.rn-realpix"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/richtext"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/vnd.rn-realtext"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/rtf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-rtf"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/vnd.rn-realvideo"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/s3m"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-tbook"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-lotusscreencam"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.guile"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.scheme"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-scm"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/sdp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-sdp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/sounder"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/sea"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-sea"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/set"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/sgml"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-sgml"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-sh"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-shar"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.sh"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-server-parsed-html"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-psid"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-sit"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-stuffit"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-koan"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-seelogo"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/smil"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-adpcm"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/solids"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-pkcs7-certificates"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-speech"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/futuresplash"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-sprite"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-wais-source"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/streamingmedia"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.ms-pki.certstore"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/step"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/sla"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.ms-pki.stl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-navistyle"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-sv4cpio"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-sv4crc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-world"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="x-world/x-svr"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-shockwave-flash"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-tar"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/toolbook"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-tcl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.tcl"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.tcsh"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-tex"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-texinfo"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/plain"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/gnutar"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/tiff"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-tiff"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/tsp-audio"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/dsptype"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/tsplayer"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/tab-separated-values"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-uil"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/uri-list"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/i-deas"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-ustar"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="multipart/x-ustar"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-uuencode"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-cdlink"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-vcalendar"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vda"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/vdo"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/groupwise"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/vivo"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/vnd.vivo"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vocaltec-media-desc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vocaltec-media-file"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/voc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-voc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/vosaic"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/voxware"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-twinvq-plugin"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-twinvq"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-vrml"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="model/vrml"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="x-world/x-vrml"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="x-world/x-vrt"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-visio"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/wordperfect6.0"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/wordperfect6.1"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/wav"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/x-wav"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-qpro"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/vnd.wap.wbmp"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.xara"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-123"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="windows/metafile"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/vnd.wap.wml"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.wap.wmlc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/vnd.wap.wmlscript"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.wap.wmlscriptc"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/wordperfect"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-wpwin"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-lotus"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/mswrite"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-wri"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/scriplet"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-wintalk"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-xbitmap"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-xbm"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/xbm"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-amt-demorun"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="xgl/drawing"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/vnd.xiff"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/excel"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-excel"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-msexcel"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/vnd.ms-excel"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="audio/xm"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/xml"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/xml"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="xgl/movie"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-vnd.ls-xpix"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/xpm"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="video/x-amt-showrun"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-xwd"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="image/x-xwindowdump"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-compress"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/x-zip-compressed"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="application/zip"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="multipart/x-zip"/>
+        </insert>
+        <insert tableName="mime_type">
+            <column name="libelle" value="text/x-script.zsh"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
+

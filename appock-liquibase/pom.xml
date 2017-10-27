@@ -1,0 +1,149 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>nc.noumea.mairie</groupId>
+    <artifactId>appock-liquibase</artifactId>
+    <version>1.06.03</version>
+
+    <inceptionYear>2017</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>GNU General Public License (GPL) v3</name>
+            <url>http://www.gnu.org/copyleft/gpl.html</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <email>thomas.lemaire@agilesoft.nc</email>
+            <id>lemth83</id>
+            <name>Thomas Lemaire</name>
+            <organization>AgileSoft.NC</organization>
+            <organizationUrl>http://www.agilesoft.nc</organizationUrl>
+            <roles>
+                <role>Développeur</role>
+            </roles>
+            <timezone>+11</timezone>
+            <url></url>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>https://github.com/DSI-Ville-Noumea/appock-liquibase.git</connection>
+        <developerConnection>https://github.com/DSI-Ville-Noumea/appock-liquibase.git</developerConnection>
+        <url>https://github.com/DSI-Ville-Noumea/appock.git</url>
+    </scm>
+
+    <organization>
+        <name>Mairie de Nouméa, Nouvelle-Calédonie</name>
+        <url>http://www.noumea.nc/</url>
+    </organization>
+
+    <contributors>
+        <!-- DSI Ville de Nouméa -->
+        <contributor>
+            <email>richard.deplanque@ville-noumea.nc</email>
+            <name>Richard Deplanque</name>
+            <organization>Mairie De Nouméa, DSI, Service Etudes et Développements</organization>
+            <organizationUrl>http://www.noumea.nc/</organizationUrl>
+            <roles>
+                <role>Directeur de projet</role>
+            </roles>
+            <timezone>+11</timezone>
+        </contributor>
+
+        <contributor>
+            <email>adrien.sales@ville-noumea.nc</email>
+            <name>Adrien Sales</name>
+            <organization>Mairie de Nouméa</organization>
+            <organizationUrl>http://www.noumea.nc</organizationUrl>
+            <roles>
+                <role>Intégrateur</role>
+                <role>DBA</role>
+                <role>Développeur Liquibase</role>
+                <role>Responsable du Département Maintenance et Développement</role>
+                <role>Scrum Master</role>
+            </roles>
+            <timezone>+11</timezone>
+        </contributor>
+
+        <contributor>
+            <email>christele.faure@ville-noumea.nc</email>
+            <name>Christèle Faure</name>
+            <organization>Mairie de Nouméa</organization>
+            <organizationUrl>http://www.noumea.nc</organizationUrl>
+            <roles>
+                <role>Scrumaster</role>
+            </roles>
+            <timezone>+11</timezone>
+        </contributor>
+
+        <contributor>
+            <email>tatiana.charvet@ville-noumea.nc</email>
+            <name>Tatiana Charvet</name>
+            <organization>Mairie de Nouméa</organization>
+            <organizationUrl>http://www.noumea.nc</organizationUrl>
+            <roles>
+                <role>Coach Agile</role>
+            </roles>
+            <timezone>+11</timezone>
+        </contributor>
+
+        <contributor>
+            <email>gaetan.willemot@ville-noumea.nc</email>
+            <name>Gaetan Willemot</name>
+            <organization>Mairie de Nouméa</organization>
+            <organizationUrl>http://www.noumea.nc</organizationUrl>
+            <roles>
+                <role>Product Owner</role>
+            </roles>
+            <timezone>+11</timezone>
+        </contributor>
+
+        <!-- AgileSoft.NC -->
+        <contributor>
+            <email>thomas.lemaire@agilesoft.nc</email>
+            <name>Thomas Lemaire</name>
+            <organization>AgileSoft.NC</organization>
+            <organizationUrl>http://www.agilesoft.nc</organizationUrl>
+            <roles>
+                <role>Développeur</role>
+            </roles>
+            <timezone>+11</timezone>
+        </contributor>
+    </contributors>
+
+    <prerequisites>
+        <maven>3.3.9</maven>
+    </prerequisites>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <executable>schemacrawler</executable>
+                    <workingDirectory>.</workingDirectory>
+                    <arguments>
+                        <argument>-c=lint -lintdispatch=terminate_system -server=postgresql -host=localhost -port=5432
+                            -url=jdbc:postgresql:appock -database=appock -user=postgres -schemas=public
+                            -outputformat=html
+                            -outputfile=appock_lints.html
+                        </argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

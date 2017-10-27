@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="AgileSoft.NC" id="create_table_adresse">
+        <createSequence sequenceName="s_adresse"/>
+        <createTable tableName="adresse" remarks="Adresses">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_adresse')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bp" type="VARCHAR(20)"/>
+            <column name="complement" type="VARCHAR(100)"/>
+            <column name="complement_num_voie" type="VARCHAR(10)"/>
+            <column name="cp" type="VARCHAR(10)"/>
+            <column name="lotissement" type="VARCHAR(100)"/>
+            <column name="num_voie" type="INT4"/>
+            <column name="point_remise" type="VARCHAR(100)"/>
+            <column name="quartier" type="VARCHAR(50)"/>
+            <column name="version" type="INT4"/>
+            <column name="ville" type="VARCHAR(100)"/>
+            <column name="voie" type="VARCHAR(100)"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="adresse_pkey" tableName="adresse"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_pole">
+        <createSequence sequenceName="s_pole" minValue="0" startValue="0"/>
+        <createTable tableName="pole" remarks="Table des Pôles">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_pole')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="pole_pkey" tableName="pole"/>
+        <addUniqueConstraint columnNames="libelle" constraintName="uk_pole_libelle" deferrable="false"
+                             disabled="false"
+                             initiallyDeferred="false" tableName="pole"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_direction">
+        <createSequence sequenceName="s_direction" minValue="0" startValue="0"/>
+        <createTable tableName="direction" remarks="Table des directions">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_direction')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pole" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="direction_pkey" tableName="direction"/>
+        <addForeignKeyConstraint baseColumnNames="pole" baseTableName="direction"
+                                 constraintName="fk_direction_pole_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="pole"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_service">
+        <createSequence sequenceName="s_service" minValue="0" startValue="0"/>
+        <createTable tableName="service" remarks="Table des services">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_service')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle_court" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="direction" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="adresse" type="INT8"/>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="service_pkey" tableName="service"/>
+        <addForeignKeyConstraint baseColumnNames="direction" baseTableName="service"
+                                 constraintName="fk_service_direction_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="direction"/>
+        <addForeignKeyConstraint baseColumnNames="adresse" baseTableName="service"
+                                 constraintName="fk_service_adresse_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="adresse"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_app_user">
+        <createSequence sequenceName="s_app_user"/>
+        <createTable tableName="app_user" remarks="Table de gestion des utilisateurs de l'application">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_app_user')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="login" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nom" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="prenom" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="email" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="telephone" type="VARCHAR(30)"/>
+            <column name="service" type="INT8"/>
+            <column name="actif" type="boolean" defaultValue="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="app_user_pkey" tableName="app_user"/>
+        <addUniqueConstraint columnNames="login" constraintName="uk_app_user_login" deferrable="false" disabled="false"
+                             initiallyDeferred="false" tableName="app_user"/>
+        <addForeignKeyConstraint baseColumnNames="service" baseTableName="app_user"
+                                 constraintName="fk_app_user_service_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="service"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_app_user_liste_role">
+        <createSequence sequenceName="s_app_user_liste_role"/>
+        <createTable tableName="app_user_liste_role" remarks="Rôles des utilisateurs de l'application">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_app_user_liste_role')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="app_user" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="liste_role" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="app_user_liste_role_pkey" tableName="app_user_liste_role"/>
+        <addForeignKeyConstraint baseColumnNames="app_user" baseTableName="app_user_liste_role"
+                                 constraintName="fk_app_user_liste_role_app_user_app_user_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="app_user"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_config">
+        <createSequence sequenceName="s_config"/>
+        <createTable tableName="config" remarks="Eléments de configuration applicative (métiers et techniques)">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_config')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="cle" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="technique" type="boolean" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_config" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+            <column name="valeur" type="VARCHAR(4000)"/>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="config_pkey" tableName="config"/>
+        <addUniqueConstraint columnNames="cle" constraintName="uk_config_cle" deferrable="false" disabled="false"
+                             initiallyDeferred="false" tableName="config"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_table_config">
+        <insert tableName="config">
+            <column name="id" valueSequenceNext="s_config"/>
+            <column name="cle" value="TITRE_APPLICATION"/>
+            <column name="description" value="Titre de l'application"/>
+            <column name="technique" value="false"/>
+            <column name="type_config" value="0"/>
+            <column name="valeur" value="APPOCK"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+
+        <insert tableName="config">
+            <column name="id" valueNumeric="25"/>
+            <column name="cle" value="TAILLE_MAX_PIECE_JOINTE_EN_MO"/>
+            <column name="description" value="Taille max. en Mo pour une pièce jointe"/>
+            <column name="technique" value="true"/>
+            <column name="type_config" value="0"/>
+            <column name="valeur" value="5"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_enum_type_config">
+        <createSequence sequenceName="s_enum_type_config" minValue="0" startValue="0"/>
+        <createTable tableName="enum_type_config">
+            <column name="id" type="INT4" defaultValueComputed="nextval('s_enum_type_config')"/>
+            <column name="name" type="VARCHAR2(20)"/>
+        </createTable>
+        <addPrimaryKey tableName="enum_type_config" columnNames="id"/>
+
+        <insert tableName="enum_type_config">
+            <column name="name" value="TEXT"/>
+        </insert>
+        <insert tableName="enum_type_config">
+            <column name="name" value="TEXTAREA"/>
+        </insert>
+
+        <addForeignKeyConstraint
+                constraintName="fk_config_type_config_enum_type_config_id"
+                baseTableName="config" baseColumnNames="type_config"
+                referencedTableName="enum_type_config" referencedColumnNames="id"
+                />
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_enum_role">
+        <createSequence sequenceName="s_enum_role" minValue="0" startValue="0"/>
+        <createTable tableName="enum_role">
+            <column name="id" type="INT4" defaultValueComputed="nextval('s_enum_role')"/>
+            <column name="name" type="VARCHAR2(40)"/>
+        </createTable>
+        <addPrimaryKey tableName="enum_role" columnNames="id"/>
+
+        <insert tableName="enum_role">
+            <column name="name" value="ROLE_ADMIN"/>
+        </insert>
+        <insert tableName="enum_role">
+            <column name="name" value="ROLE_REFERENT_ACHATS"/>
+        </insert>
+        <insert tableName="enum_role">
+            <column name="name" value="ROLE_REFERENT_SERVICE"/>
+        </insert>
+        <insert tableName="enum_role">
+            <column name="name" value="ROLE_USER"/>
+        </insert>
+
+        <addForeignKeyConstraint
+                constraintName="fk_config_role_enum_role_id"
+                baseTableName="app_user_liste_role" baseColumnNames="liste_role"
+                referencedTableName="enum_role" referencedColumnNames="id"
+                />
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_admin_user">
+        <insert tableName="app_user">
+            <column name="id" valueSequenceNext="s_app_user"/>
+            <column name="login" value="lemth83"/>
+            <column name="nom" value="LEMAIRE"/>
+            <column name="prenom" value="Thomas"/>
+            <column name="email" value="thomas.lemaire@agilesoft.nc"/>
+            <column name="actif" value="true"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+        <insert tableName="app_user">
+            <column name="id" valueSequenceNext="s_app_user"/>
+            <column name="login" value="fauch75"/>
+            <column name="nom" value="FAURE"/>
+            <column name="prenom" value="Christèle"/>
+            <column name="email" value="chistele.faure@ville-noumea.nc"/>
+            <column name="actif" value="true"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+        <insert tableName="app_user">
+            <column name="id" valueSequenceNext="s_app_user"/>
+            <column name="login" value="wilga59"/>
+            <column name="nom" value="WILLEMOT"/>
+            <column name="prenom" value="Gaëtan"/>
+            <column name="email" value="gaetan.willemot@ville-noumea.nc"/>
+            <column name="actif" value="true"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+        <insert tableName="app_user">
+            <column name="id" valueSequenceNext="s_app_user"/>
+            <column name="login" value="apps-test"/>
+            <column name="nom" value="SALES"/>
+            <column name="prenom" value="Adrien"/>
+            <column name="email" value="adrien.sales@ville-noumea.nc"/>
+            <column name="actif" value="true"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_user_liste_role">
+        <sql dbms="postgresql">
+            <![CDATA[
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='lemth83'), (select id from enum_role where name='ROLE_USER'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='lemth83'), (select id from enum_role where name='ROLE_ADMIN'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='fauch75'), (select id from enum_role where name='ROLE_USER'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='fauch75'), (select id from enum_role where name='ROLE_ADMIN'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='wilga59'), (select id from enum_role where name='ROLE_USER'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='wilga59'), (select id from enum_role where name='ROLE_ADMIN'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='apps-test'), (select id from enum_role where name='ROLE_USER'));
+				insert into app_user_liste_role(id, app_user, liste_role)
+				values (nextval('s_app_user_liste_role'), (select id from app_user where login='apps-test'), (select id from enum_role where name='ROLE_ADMIN'));
+			]]>
+        </sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_marche">
+        <createSequence sequenceName="s_marche" minValue="0" startValue="0"/>
+        <createTable tableName="marche" remarks="Table des marchés">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_marche')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="marche_pkey" tableName="marche"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_sous_marche">
+        <createSequence sequenceName="s_sous_marche" minValue="0" startValue="0"/>
+        <createTable tableName="sous_marche" remarks="Table des sous-marchés">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_sous_marche')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="marche" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="sous_marche_pkey" tableName="sous_marche"/>
+        <addForeignKeyConstraint baseColumnNames="marche" baseTableName="sous_marche"
+                                 constraintName="fk_sous_marche_marche_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="marche"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_catalogue">
+        <createSequence sequenceName="s_catalogue" minValue="0" startValue="0"/>
+        <createTable tableName="catalogue" remarks="Table des catalogues">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_catalogue')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="marche" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="catalogue_pkey" tableName="catalogue"/>
+        <addUniqueConstraint columnNames="libelle" constraintName="uk_catalogue_libelle" deferrable="false"
+                             disabled="false"
+                             initiallyDeferred="false" tableName="catalogue"/>
+        <addForeignKeyConstraint baseColumnNames="marche" baseTableName="catalogue"
+                                 constraintName="fk_catalogue_marche_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="marche"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_famille">
+        <createSequence sequenceName="s_famille" minValue="0" startValue="0"/>
+        <createTable tableName="famille" remarks="Table des familles">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_famille')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="catalogue" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="famille_pkey" tableName="famille"/>
+        <addForeignKeyConstraint baseColumnNames="catalogue" baseTableName="famille"
+                                 constraintName="fk_famille_catalogue_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="catalogue"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_sous_famille">
+        <createSequence sequenceName="s_sous_famille" minValue="0" startValue="0"/>
+        <createTable tableName="sous_famille" remarks="Table des sous-famille">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_sous_famille')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="famille" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="sous_famille_pkey" tableName="sous_famille"/>
+        <addForeignKeyConstraint baseColumnNames="famille" baseTableName="sous_famille"
+                                 constraintName="fk_sous_famille_famille_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="famille"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_photo_article">
+        <createSequence sequenceName="s_photo_article" minValue="0" startValue="0"/>
+        <createTable tableName="photo_article"
+                     remarks="Table des photos des articles (le contenu des fichiers est stocké hors base de données)">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_photo_article')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="md5" type="VARCHAR(32)"/>
+            <column name="mime_type" type="INT8"/>
+            <column name="nom_fichier" type="VARCHAR(500)"/>
+            <column name="taille_fichier" type="BIGINT"></column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="photo_article_pkey" tableName="photo_article"/>
+        <addForeignKeyConstraint baseColumnNames="mime_type" baseTableName="photo_article"
+                                 constraintName="fk_photo_article_mime_type_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="mime_type"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_article">
+        <createSequence sequenceName="s_article" minValue="0" startValue="0"/>
+        <createTable tableName="article" remarks="Table des articles">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_article')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="libelle" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="sous_famille" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+            <column name="prix" type="INT4"/>
+            <column name="quantite_colisage" type="INT4"/>
+            <column name="unite_colisage" type="VARCHAR(200)"/>
+            <column name="photo_article" type="INT8"/>
+            <column name="lien_fournisseur" type="VARCHAR(200)"/>
+            <column name="sous_marche" type="INT8"/>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="article_pkey" tableName="article"/>
+        <addForeignKeyConstraint baseColumnNames="sous_famille" baseTableName="article"
+                                 constraintName="fk_article_sous_famille_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="sous_famille"/>
+        <addForeignKeyConstraint baseColumnNames="photo_article" baseTableName="article"
+                                 constraintName="fk_article_photo_article_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="photo_article"/>
+        <addForeignKeyConstraint baseColumnNames="sous_marche" baseTableName="article"
+                                 constraintName="fk_article_sous_marche_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="sous_marche"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="tag1.01.00">
+        <tagDatabase tag="1.01.00"/>
+    </changeSet>
+
+</databaseChangeLog>

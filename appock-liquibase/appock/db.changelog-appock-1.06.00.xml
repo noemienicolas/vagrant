@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="AgileSoft.NC" id="delete_all">
+        <sql>delete from mouvement_stock</sql>
+        <sql>delete from article</sql>
+        <sql>delete from panier</sql>
+        <sql>delete from favori</sql>
+        <sql>delete from demande</sql>
+        <sql>delete from commande_service</sql>
+        <sql>delete from commande</sql>
+        <sql>delete from article_catalogue</sql>
+        <sql>delete from sous_famille</sql>
+        <sql>delete from famille</sql>
+        <sql>delete from catalogue</sql>
+        <sql>delete from photo_article_catalogue</sql>
+        <sql>delete from bon_livraison</sql>
+        <sql>delete from type_colisage</sql>
+        <update tableName="service">
+            <column name="stock" value="null"/>
+        </update>
+        <update tableName="config">
+            <column name="fichier_documentation_utilisateur" value="null"/>
+        </update>
+        <sql>delete from fichier_documentation_utilisateur</sql>
+        <sql>delete from stock</sql>
+
+        <dropForeignKeyConstraint baseTableName="article_catalogue" constraintName="fk_article_photo_article_id"/>
+        <dropForeignKeyConstraint baseTableName="commande_service"
+                                  constraintName="fk_commande_service_bon_livraison_id"/>
+        <dropForeignKeyConstraint baseTableName="config"
+                                  constraintName="fk_config_fichier_documentation_utilisateur_id"/>
+
+        <dropTable tableName="photo_article_catalogue"/>
+        <dropTable tableName="bon_livraison"/>
+        <dropTable tableName="fichier_documentation_utilisateur"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="update_enum_role">
+        <update tableName="enum_role">
+            <column name="name" value="ROLE_REFERENT_ACHAT"/>
+            <where>name='ROLE_REFERENT_ACHATS'</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_fichier_binaire">
+        <createSequence sequenceName="s_fichier_binaire" minValue="0" startValue="0"/>
+        <createTable tableName="fichier_binaire"
+                     remarks="Table des fichiers binaires (le contenu des fichiers est stocké hors base de données)">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_fichier_binaire')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="md5" type="VARCHAR(32)"/>
+            <column name="mime_type" type="INT8"/>
+            <column name="nom_fichier" type="VARCHAR(500)"/>
+            <column name="taille_fichier" type="BIGINT"></column>
+            <column name="version" type="INT4"/>
+            <column name="dtype_fichier_binaire_id" type="INT4">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="fichier_binaire_pkey" tableName="fichier_binaire"/>
+        <addForeignKeyConstraint baseColumnNames="mime_type" baseTableName="fichier_binaire"
+                                 constraintName="fk_fichier_binaire_mime_type_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="mime_type"/>
+        <addForeignKeyConstraint baseColumnNames="photo_article_catalogue" baseTableName="article_catalogue"
+                                 constraintName="fk_article_fichier_binaire_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="fichier_binaire"/>
+
+        <addLookupTable constraintName="fk_dtype_fichier_binaire"
+                        existingColumnName="dtype_fichier_binaire_id" existingTableName="fichier_binaire"
+                        newColumnDataType="BIGINT" newColumnName="id" newTableName="dtype_fichier_binaire"/>
+
+        <createSequence sequenceName="s_dtype_fichier_binaire" minValue="0" startValue="0"/>
+        <addDefaultValue tableName="dtype_fichier_binaire" columnName="id"
+                         defaultValueComputed="nextval('s_dtype_fichier_binaire')"/>
+
+        <modifyDataType tableName="dtype_fichier_binaire" columnName="id" newDataType="integer"/>
+
+        <addColumn tableName="dtype_fichier_binaire">
+            <column name="classe" type="varchar(50)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+
+        <insert tableName="dtype_fichier_binaire">
+            <column name="id" valueSequenceNext="s_dtype_fichier_binaire"/>
+            <column name="classe" value="BonLivraison"/>
+        </insert>
+        <insert tableName="dtype_fichier_binaire">
+            <column name="id" valueSequenceNext="s_dtype_fichier_binaire"/>
+            <column name="classe" value="FichierDocumentationUtilisateur"/>
+        </insert>
+        <insert tableName="dtype_fichier_binaire">
+            <column name="id" valueSequenceNext="s_dtype_fichier_binaire"/>
+            <column name="classe" value="PhotoArticleCatalogue"/>
+        </insert>
+
+        <addForeignKeyConstraint baseColumnNames="bon_livraison" baseTableName="commande_service"
+                                 constraintName="fk_commande_service_fichier_binaire_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="fichier_binaire"/>
+
+        <addForeignKeyConstraint baseColumnNames="fichier_documentation_utilisateur" baseTableName="config"
+                                 constraintName="fk_config_fichier_binaire_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="fichier_binaire"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_propriete_fournisseur">
+        <addColumn tableName="fournisseur">
+            <column name="code" type="varchar(200)"/>
+            <column name="telephone" type="varchar(30)"/>
+            <column name="email" type="varchar(200)"/>
+            <column name="adresse" type="INT8"/>
+            <column name="nom_referent" type="varchar(200)"/>
+            <column name="prenom_referent" type="varchar(200)"/>
+            <column name="telephone_referent" type="varchar(30)"/>
+        </addColumn>
+
+        <addForeignKeyConstraint baseColumnNames="adresse" baseTableName="fournisseur"
+                                 constraintName="fk_fournisseur_adresse_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="adresse"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_passage_user_commande">
+        <addColumn tableName="commande">
+            <column name="passage_user" type="varchar(200)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_validation_user_et_date_commande_service">
+        <addColumn tableName="commande_service">
+            <column name="date_validation_commande_service" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="validation_user" type="VARCHAR2(200)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="maj_user">
+        <update tableName="app_user">
+            <column name="login" value="darmi72"/>
+            <where>login='dari72'</where>
+        </update>
+        <update tableName="app_user">
+            <column name="login" value="tocis88"/>
+            <where>login='toci88'</where>
+        </update>
+        <sql dbms="postgresql">
+            <![CDATA[
+				insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'suaja59','SUAREZ','Jacky','jacky.suarez@ville-noumea.nc','27.07.39', (select id from service where libelle_court='SAC' and direction = (select id from direction where libelle_court='SCAF' and pole=(select id from pole where libelle='AMENAGEMENT'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'davma73','DAVER','Martine','martine.daver@ville-noumea.nc','27.07.39', (select id from service where libelle_court='SAC' and direction = (select id from direction where libelle_court='SCAF' and pole=(select id from pole where libelle='AMENAGEMENT'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'gaygi69','GAYON','Giovanna','giovanna.gayon@ville-noumea.nc','27.07.39', (select id from service where libelle_court='SAC' and direction = (select id from direction where libelle_court='SCAF' and pole=(select id from pole where libelle='AMENAGEMENT'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+
+                update app_user set poste='5034' where login='curir63';
+                update app_user set poste='5046' where login='hnaan82';
+                update app_user set poste='5072' where login='decau77';
+                update app_user set poste='5119' where login='desno82';
+                update app_user set poste='5131' where login='brona72';
+                update app_user set poste='5132' where login='dasem82';
+                update app_user set poste='5001' where login='sangi69';
+                update app_user set poste='5008' where login='suaja59';
+                update app_user set poste='5009' where login='davma73';
+                update app_user set poste='5005' where login='gaygi69';
+                update app_user set poste='5004' where login='vaiem74';
+                update app_user set poste='6156' where login='honar57';
+                update app_user set poste='6145' where login='potca70';
+                update app_user set poste='6153' where login='konsa80';
+                update app_user set poste='6158' where login='tanau90';
+                update app_user set poste='7139' where login='mautu70';
+                update app_user set poste='7153' where login='nicbe71';
+                update app_user set poste='8202' where login='wilga59';
+                update app_user set poste='8234' where login='bluol70';
+                update app_user set poste='8211' where login='matka73';
+                update app_user set poste='8201' where login='poima67';
+                update app_user set poste='6265' where login='marsv63';
+                update app_user set poste='6255' where login='matem95';
+                update app_user set poste='6223' where login='mahvi72';
+                update app_user set poste='6200' where login='prasy75';
+                update app_user set poste='6181' where login='boust75';
+                update app_user set poste='6236' where login='craje60';
+                update app_user set poste='6183' where login='ethla90';
+                update app_user set poste='5271' where login='guyha83';
+                update app_user set poste='5278' where login='robka65';
+                update app_user set poste='6144' where login='katka74';
+                update app_user set poste='6154' where login='raide95';
+                update app_user set poste='6117' where login='macch70';
+                update app_user set poste='6118' where login='guian87';
+                update app_user set poste='6133' where login='rezan69';
+                update app_user set poste='6243' where login='couro62';
+                update app_user set poste='8680' where login='flada68';
+                update app_user set poste='8685' where login='mardi63';
+                update app_user set poste='7220' where login='komma82';
+                update app_user set poste='7221' where login='velva77';
+                update app_user set poste='8842' where login='teima55';
+                update app_user set poste='8860' where login='malmi57';
+                update app_user set poste='8818' where login='belau83';
+                update app_user set poste='7441' where login='fogal87';
+                update app_user set poste='7518' where login='dari72';
+                update app_user set poste='7122' where login='trian81';
+                update app_user set poste='6063' where login='parva78';
+                update app_user set poste='6064' where login='toci88';
+                update app_user set poste='5163' where login='bozan85';
+                update app_user set poste='5164' where login='chapa89';
+                update app_user set poste='5165' where login='wahmi79';
+                update app_user set poste='7422' where login='durch74';
+                update app_user set poste='7426' where login='kadsa88';
+                update app_user set poste='6086' where login='bauna77';
+                update app_user set poste='6060' where login='flolu80';
+                update app_user set poste='6088' where login='douci81';
+                update app_user set poste='7543' where login='barco69';
+                update app_user set poste='7529' where login='garva94';
+                update app_user set poste='7528' where login='putva79';
+			]]>
+        </sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="tag1.06.00">
+        <tagDatabase tag="1.06.00"/>
+    </changeSet>
+</databaseChangeLog>

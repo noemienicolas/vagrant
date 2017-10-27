@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <changeSet author="AgileSoft.NC" id="delete_all">
+        <sql>delete from article</sql>
+        <sql>delete from panier</sql>
+        <sql>delete from favori</sql>
+        <sql>delete from demande</sql>
+        <sql>delete from commande</sql>
+        <sql>delete from article_catalogue</sql>
+        <sql>delete from sous_famille</sql>
+        <sql>delete from famille</sql>
+        <sql>delete from catalogue</sql>
+        <sql>delete from sous_marche</sql>
+        <sql>delete from marche</sql>
+        <sql>delete from photo_article_catalogue</sql>
+        <sql>delete from app_user_liste_role</sql>
+        <sql>delete from app_user</sql>
+        <sql>delete from service</sql>
+        <sql>delete from direction</sql>
+        <sql>delete from pole</sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_fournisseur">
+        <createSequence sequenceName="s_fournisseur" minValue="0" startValue="0"/>
+        <createTable tableName="fournisseur" remarks="Table des fournisseurs">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_fournisseur')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="nom" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="fournisseur_pkey" tableName="fournisseur"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="ajout_fournisseur_sous_marche">
+        <dropColumn tableName="sous_marche">
+            <column name="attributaire"/>
+        </dropColumn>
+        <addColumn tableName="sous_marche">
+            <column name="fournisseur" type="INT8">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="fournisseur" baseTableName="sous_marche"
+                                 constraintName="fk_fournisseur_sous_marche_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="fournisseur"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="ajout_fournisseur_article_catalogue">
+        <addColumn tableName="article_catalogue">
+            <column name="fournisseur" type="INT8"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="fournisseur" baseTableName="article_catalogue"
+                                 constraintName="fk_fournisseur_article_catalogue_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="fournisseur"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="ajout_libelle_court_sous_marche">
+        <addColumn tableName="sous_marche">
+            <column name="libelle_court" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_table_config">
+        <insert tableName="config">
+            <column name="id" valueSequenceNext="s_config"/>
+            <column name="cle" value="MOT_DE_PASSE_VERROU_EXCEL"/>
+            <column name="description"
+                    value="Mot de passe utilisé par le logiciel pour vérouiller les fichiers Excels"/>
+            <column name="technique" value="true"/>
+            <column name="type_config" value="0"/>
+            <column name="valeur" value="%@!Zce23-*/A"/>
+            <column name="version" valueNumeric="0"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="ajout_libelle_court_direction">
+        <addColumn tableName="direction">
+            <column name="libelle_court" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_ajout_referent_achat_article_demande">
+        <addColumn tableName="article">
+            <column name="ajout_referent_achat" type="boolean" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_enum_etat_commande">
+        <insert tableName="enum_etat_commande">
+            <column name="name" value="EN_ATTENTE_RECEPTION_COMMANDE"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_enum_etat_commande_receptionne">
+        <insert tableName="enum_etat_commande">
+            <column name="name" value="RECEPTIONNE"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_dtype_article_commande">
+        <insert tableName="dtype_article">
+            <column name="id" value="3"/>
+            <column name="classe" value="ArticleCommande"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_commande_service">
+        <createSequence sequenceName="s_commande_service" minValue="0" startValue="0"/>
+        <createTable tableName="commande_service" remarks="Table des commandes au sein d'un service">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_commande_service')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="commande" type="INT8"/>
+            <column name="service" type="INT8"/>
+            <column name="etat_commande_service" type="INT4"/>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="commande_service_pkey" tableName="commande_service"/>
+        <addForeignKeyConstraint baseColumnNames="commande" baseTableName="commande_service"
+                                 constraintName="fk_commande_service_commande_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="commande"/>
+        <addForeignKeyConstraint baseColumnNames="service" baseTableName="commande_service"
+                                 constraintName="fk_commande_service_service_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="service"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_enum_etat_commande_service">
+        <createSequence sequenceName="s_enum_etat_commande_service" minValue="0" startValue="0"/>
+        <createTable tableName="enum_etat_commande_service">
+            <column name="id" type="INT4" defaultValueComputed="nextval('s_enum_etat_commande_service')"/>
+            <column name="name" type="VARCHAR2(40)"/>
+        </createTable>
+        <addPrimaryKey tableName="enum_etat_commande_service" columnNames="id"/>
+
+        <insert tableName="enum_etat_commande_service">
+            <column name="name" value="EN_ATTENTE_RECEPTION_COMMANDE"/>
+        </insert>
+        <insert tableName="enum_etat_commande_service">
+            <column name="name" value="RECEPTIONNE"/>
+        </insert>
+        <addForeignKeyConstraint
+                constraintName="fk_commande_service_enum_etat_commande_service_id"
+                baseTableName="commande_service" baseColumnNames="etat_commande_service"
+                referencedTableName="enum_etat_commande_service" referencedColumnNames="id"
+                />
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="ajout_article_commande_actif_et_quantite_recu">
+        <addColumn tableName="article">
+            <column name="quantite_recu" type="INT4"/>
+            <column name="commande_service" type="INT8"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="commande_service" baseTableName="article"
+                                 constraintName="fk_article_commande_service_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="commande_service"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_commande_service_user_et_date">
+        <addColumn tableName="commande_service">
+            <column name="date_passage_reception" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="reception_user" type="VARCHAR(200)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="create_table_bon_livraison">
+        <createSequence sequenceName="s_bon_livraison" minValue="0" startValue="0"/>
+        <createTable tableName="bon_livraison"
+                     remarks="Table des bons de livraison (le contenu des fichiers est stocké hors base de données)">
+            <column name="id" type="INT8" defaultValueComputed="nextval('s_bon_livraison')">
+                <constraints nullable="false"/>
+            </column>
+            <column name="md5" type="VARCHAR(32)"/>
+            <column name="mime_type" type="INT8"/>
+            <column name="nom_fichier" type="VARCHAR(500)"/>
+            <column name="taille_fichier" type="BIGINT"></column>
+            <column name="version" type="INT4"/>
+        </createTable>
+        <addPrimaryKey columnNames="id" constraintName="bon_livraison_pkey" tableName="bon_livraison"/>
+        <addForeignKeyConstraint baseColumnNames="mime_type" baseTableName="bon_livraison"
+                                 constraintName="fk_bon_livraison_mime_type_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="mime_type"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_commande_service_bon_livraison">
+        <addColumn tableName="commande_service">
+            <column name="bon_livraison" type="INT8"/>
+        </addColumn>
+        <addForeignKeyConstraint baseColumnNames="bon_livraison" baseTableName="commande_service"
+                                 constraintName="fk_commande_service_bon_livraison_id" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="bon_livraison"/>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="maj_font_pied_page">
+        <update tableName="config">
+            <column name="valeur"
+                    value="&lt;font face='arial'&gt;Cordialement,&lt;br/&gt;Le bureau des achats de la Mairie de Nouméa&lt;br/&gt;&lt;/font&gt;&lt;font face='arial' color='#888' size='1'&gt;Ce courriel est envoyé automatiquement par l'application APPOCK. Merci de ne pas y répondre directement.&lt;br/&gt;Pour toutes questions vous pouvez utiliser l'adresse suivante : &lt;a href='mailto:gaetan.willemot@ville-noumea.nc'&gt;gaetan.willemot@ville-noumea.nc&lt;/a&gt;&lt;/font&gt;"/>
+            <where>cle='PIED_DE_MAIL'</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_fournisseur">
+        <sql dbms="postgresql">
+            <![CDATA[
+				insert into fournisseur(id, nom, version) values (nextval('s_fournisseur'), 'AS DE TREFLE', 0);
+				insert into fournisseur(id, nom, version) values (nextval('s_fournisseur'), 'NOPAC', 0);
+			]]>
+        </sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_marche_sous_marche">
+        <sql dbms="postgresql">
+            <![CDATA[
+				insert into marche(id, libelle, version) values (nextval('s_marche'), '2017', 0);
+				insert into sous_marche(id, libelle, libelle_court, numero, marche, fournisseur, version) values (nextval('s_sous_marche'), 'LOT 1 ECRITURES ET CLASSEMENTS', 'LOT 1', '17DF141', (select id from marche where libelle = '2017'), (select id from fournisseur where nom = 'AS DE TREFLE'), 0);
+				insert into sous_marche(id, libelle, libelle_court, numero, marche, fournisseur, version) values (nextval('s_sous_marche'), 'LOT 2 ENVELOPPES', 'LOT 2', '17DF142', (select id from marche where libelle = '2017'), (select id from fournisseur where nom = 'NOPAC'), 0);
+				insert into sous_marche(id, libelle, libelle_court, numero, marche, fournisseur, version) values (nextval('s_sous_marche'), 'LOT 3 TAMPONS', 'LOT 3', '17DF142', (select id from marche where libelle = '2017'), (select id from fournisseur where nom = 'NOPAC'), 0);
+			]]>
+        </sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="init_pole_direction_service">
+        <sql dbms="postgresql">
+            <![CDATA[
+				insert into pole(id, libelle, version) values (nextval('s_pole'), 'SECRETARIAT GENERAL', 0);
+				insert into pole(id, libelle, version) values (nextval('s_pole'), 'AMENAGEMENT', 0);
+				insert into pole(id, libelle, version) values (nextval('s_pole'), 'RESSOURCE', 0);
+				insert into pole(id, libelle, version) values (nextval('s_pole'), 'SECURITE', 0);
+				insert into pole(id, libelle, version) values (nextval('s_pole'), 'VIE LOCALE', 0);
+
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'CABINET DU MAIRE', 'CAB', (select id from pole where libelle='SECRETARIAT GENERAL'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'CELLULE COMMUNICATION', 'COM', (select id from pole where libelle='SECRETARIAT GENERAL'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'SECRETARIAT GENERAL', 'SG', (select id from pole where libelle='SECRETARIAT GENERAL'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DE L''ESPACE PUBLIC', 'DEP', (select id from pole where libelle='AMENAGEMENT'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DE L''URBANISME', 'DU', (select id from pole where libelle='AMENAGEMENT'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION AMENAGEMENTS ET CONSTRUCTIONS PUBLICS', 'DACP', (select id from pole where libelle='AMENAGEMENT'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'SERVICE COORDINATION ADMINISTRATION ET FINANCES', 'SCAF', (select id from pole where libelle='AMENAGEMENT'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DES RESSOURCES HUMAINES', 'DRH', (select id from pole where libelle='RESSOURCE'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'SERVICE D''INFORMATION GEOGRAPHIQUE', 'SIG', (select id from pole where libelle='RESSOURCE'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DES SYSTEMES D''INFORMATION', 'DSI', (select id from pole where libelle='RESSOURCE'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DE L''ADMINISTRATION, DU JURIDIQUE ET DES MOYENS', 'DAJM', (select id from pole where libelle='RESSOURCE'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DES FINANCES', 'DF', (select id from pole where libelle='RESSOURCE'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DE LA POLICE MUNICIPALE', 'DPM', (select id from pole where libelle='SECURITE'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DES RISQUES SANITAIRES', 'DRS', (select id from pole where libelle='SECURITE'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DES SERVICES INCENDIE ET SECOURS', 'DSIS', (select id from pole where libelle='SECURITE'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DE LA CULTURE, DU PATRIMOINE ET DU RAYONNEMENT', 'DCPR', (select id from pole where libelle='VIE LOCALE'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DE LA POLITIQUE DE LA VILLE', 'DPV', (select id from pole where libelle='VIE LOCALE'), 0);
+				insert into direction(id, libelle, libelle_court, pole, version) values (nextval('s_direction'), 'DIRECTION DE LA VIE CITOYENNE, EDUCATIVE ET SPORTIVE', 'DVCES', (select id from pole where libelle='VIE LOCALE'), 0);
+
+                insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'HOTEL DE VILLE', null, '98849', null, '16', 'ETAGE 1', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL MANGIN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'CABINET DU MAIRE', 'CAB', (select id from direction where libelle_court='CAB' and pole = (select id from pole where libelle='SECRETARIAT GENERAL')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'HOTEL DE VILLE', null, '98849', null, '16', 'ETAGE 1', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL MANGIN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'CELLULE COMMUNICATION', 'COM', (select id from direction where libelle_court='COM' and pole = (select id from pole where libelle='SECRETARIAT GENERAL')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'HOTEL DE VILLE', null, '98849', null, '16', 'ETAGE 1', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL MANGIN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SECRETARIAT GENERAL', 'SG', (select id from direction where libelle_court='SG' and pole = (select id from pole where libelle='SECRETARIAT GENERAL')), (select currval('s_adresse')), true, null , 0);
+                insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, null, null, null, null, null, null, null, null, null, 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE ADMINISTRATION ET COMPTABLE', 'SAC', (select id from direction where libelle_court='SG' and pole = (select id from pole where libelle='SECRETARIAT GENERAL')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'ANNEXE FERRY', null, '98800', null, '29', 'ETAGE 4', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE JULES FERRY', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'POLE ADMINISTRATIF ET BUDGETAIRE', 'PAB', (select id from direction where libelle_court='DEP' and pole = (select id from pole where libelle='AMENAGEMENT')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'ANNEXE FERRY', null, '98800', null, '29', 'ETAGE 3', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE JULES FERRY', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'POLE ADMINISTRATIF ET BUDGETAIRE', 'PAB', (select id from direction where libelle_court='DU' and pole = (select id from pole where libelle='AMENAGEMENT')), (select currval('s_adresse')), true, null , 0);
+                insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'ANNEXE FERRY', null, '98800', null, '29', 'ETAGE 3', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE JULES FERRY', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE ADMINISTRATION ET COMPTABLE', 'SAC', (select id from direction where libelle_court='DACP' and pole = (select id from pole where libelle='AMENAGEMENT')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'ANNEXE FERRY', null, '98800', null, '29', 'ETAGE 4', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE JULES FERRY', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE ADMINISTRATION ET COMPTABLE', 'SAC', (select id from direction where libelle_court='SCAF' and pole = (select id from pole where libelle='AMENAGEMENT')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'HOTEL DE VILLE', null, '98849', null, '16', 'ETAGE 2', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL MANGIN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'POLE ADMINISTRATIF ET BUDGETAIRE', 'PAB', (select id from direction where libelle_court='DRH' and pole = (select id from pole where libelle='RESSOURCE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'IMMEUBLE LE MANATHAN', null, '98800', null, '39', 'ETAGE 1', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DE VERDUN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE INFORMATION GEOGRAPHIQUE', 'SIG', (select id from direction where libelle_court='SIG' and pole = (select id from pole where libelle='RESSOURCE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'HOTEL DE VILLE', null, '98849', null, '16', 'ETAGE 2', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL MANGIN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'POLE ADMINISTRATIF ET BUDGETAIRE', 'PAB', (select id from direction where libelle_court='DSI' and pole = (select id from pole where libelle='RESSOURCE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'HOTEL DE VILLE', null, '98849', null, '16', 'ETAGE 3', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL MANGIN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'CELLULE DU CONSEIL MUNICIPAL', 'CCM', (select id from direction where libelle_court='DAJM' and pole = (select id from pole where libelle='RESSOURCE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'HOTEL DE VILLE', null, '98849', null, '16', 'ETAGE 3', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL MANGIN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE DU JURIDIQUE ET DU CONTENTIEUX', 'SJC', (select id from direction where libelle_court='DAJM' and pole = (select id from pole where libelle='RESSOURCE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'HOTEL DE VILLE', null, '98849', null, '16', 'ETAGE 3', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL MANGIN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'DIRECTION DES FINANCES', 'DF', (select id from direction where libelle_court='DAJM' and pole = (select id from pole where libelle='RESSOURCE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'HOTEL DE VILLE', null, '98849', null, '16', 'ETAGE 1', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL MANGIN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE COURRIER', 'SC', (select id from direction where libelle_court='DAJM' and pole = (select id from pole where libelle='RESSOURCE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'BATIMENT ACCUEIL/STANDARD', null, '98800', null, '3', null, 'DONIAMBO', 'NOUMEA CEDEX', 'RUE L. PHILOGENE DESJARDINS', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE DES MOYENS GENERAUX', 'SMG', (select id from direction where libelle_court='DAJM' and pole = (select id from pole where libelle='RESSOURCE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'BATIMENT ACCUEIL/STANDARD', null, '98800', null, '3', null, 'DONIAMBO', 'NOUMEA CEDEX', 'RUE L. PHILOGENE DESJARDINS', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE ADMINISTRATION ET COMPTABLE', 'SMG-SAC', (select id from direction where libelle_court='DAJM' and pole = (select id from pole where libelle='RESSOURCE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'BATIMENT ACCUEIL/STANDARD', null, '98800', null, '3', null, 'DONIAMBO', 'NOUMEA CEDEX', 'RUE L. PHILOGENE DESJARDINS', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SECTION ACHAT', 'SMG-SA', (select id from direction where libelle_court='DAJM' and pole = (select id from pole where libelle='RESSOURCE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, null, null, null, null, null, null, null, null, null, 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'POLE ADMINISTRATIF ET BUDGETAIRE', 'PAB', (select id from direction where libelle_court='DF' and pole = (select id from pole where libelle='RESSOURCE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'BATIMENT PRINCIPAL', null, '98800', null, '10', 'ETAGE 1', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL GALIENI', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SECTION LOGISTIQUE', 'SL', (select id from direction where libelle_court='DPM' and pole = (select id from pole where libelle='SECURITE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'BATIMENT PRINCIPAL', null, '98800', null, '100', 'ETAGE 1', 'MONTAGNE-COUPEE', 'NOUMEA CEDEX', 'RUE EDOUARD UNGER', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'POLE ADMINISTRATIF ET BUDGETAIRE', 'PAB', (select id from direction where libelle_court='DRS' and pole = (select id from pole where libelle='SECURITE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'CENTRE DE SECOURS CLP', null, '98800', null, '51', 'ETAGE 1', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE GEORGES CLEMENCEAU', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'CENTRE LUCIEN PARENT NOUMEA', 'CLP NEA', (select id from direction where libelle_court='DSIS' and pole = (select id from pole where libelle='SECURITE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'CENTRE DE SECOURS CTA', null, '98800', null, '350', 'REZ DE CHAUSSE', 'NORMANDIE', 'NOUMEA CEDEX', 'RUE JACQUES LEKAWE', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'CENTRE MAPERI NORMANDIE', 'CM NMDIE', (select id from direction where libelle_court='DSIS' and pole = (select id from pole where libelle='SECURITE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'CENTRE DE SECOURS CLP', null, '98800', null, '51', 'ETAGE 1', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE GEORGES CLEMENCEAU', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'POLE ADMINISTRATIF ET BUDGETAIRE', 'PAB', (select id from direction where libelle_court='DSIS' and pole = (select id from pole where libelle='SECURITE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'BATIMENT PRINCIPAL', null, '98800', null, '9', 'ETAGE 2', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DE LA REPUBLIQUE', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'POLE ADMINISTRATIF ET BUDGETAIRE', 'PAB', (select id from direction where libelle_court='DCPR' and pole = (select id from pole where libelle='VIE LOCALE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'ANNEXE MAIRIE 2', null, '98800', null, '20', 'REZ DE CHAUSSE', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE GALLIENI', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'POLE ADMINISTRATIF ET BUDGETAIRE', 'PAB', (select id from direction where libelle_court='DPV' and pole = (select id from pole where libelle='VIE LOCALE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'HOTEL DE VILLE', null, '98800', null, '16', 'REZ DE CHAUSSE', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL MANGIN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE DE LA VIE CITOYENNE', 'SVC', (select id from direction where libelle_court='DVCES' and pole = (select id from pole where libelle='VIE LOCALE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, null, null, null, null, null, null, null, null, null, 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE DE LA VIE CITOYENNE-SMC', 'SVC-SMC', (select id from direction where libelle_court='DVCES' and pole = (select id from pole where libelle='VIE LOCALE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'ANNEXE FERRY', null, '98800', null, '29', 'REZ DE CHAUSSE', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE JULES FERRY', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SECTION ELECTIONS', 'SE', (select id from direction where libelle_court='DVCES' and pole = (select id from pole where libelle='VIE LOCALE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'BATIMENT PRINCIPAL', null, '98800', null, '9', 'ETAGE 1', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DE LA REPUBLIQUE', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE MUNICIPAL DES SPORTS ', 'SMS', (select id from direction where libelle_court='DVCES' and pole = (select id from pole where libelle='VIE LOCALE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, null, null, null, null, null, null, null, null, null, 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE ADMINISTRATION ET COMPTABLE', 'SMS-SAC', (select id from direction where libelle_court='DVCES' and pole = (select id from pole where libelle='VIE LOCALE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'HOTEL DE VILLE', null, '98800', null, '16', 'ETAGE 1', 'CENTRE-VILLE', 'NOUMEA CEDEX', 'RUE DU GENERAL MANGIN', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'POLE ADMINISTRATIF ET BUDGETAIRE', 'PAB', (select id from direction where libelle_court='DVCES' and pole = (select id from pole where libelle='VIE LOCALE')), (select currval('s_adresse')), true, null , 0);
+				insert into adresse(id, bp, complement, complement_num_voie, cp, lotissement, num_voie, point_remise, quartier, ville, voie, version) values (nextval('s_adresse'), null, 'ANCIENNE ECOLE SUZANNE BERTON', null, '98800', null, '33', 'ETAGE 2', 'RIVIERE-SALEE', 'NOUMEA CEDEX', 'AVENUE BONAPARTE', 0);
+				insert into service(id, libelle, libelle_court, direction, adresse, actif, telephone, version) values (nextval('s_service'), 'SERVICE VIE EDUCATIVE', 'SVE', (select id from direction where libelle_court='DVCES' and pole = (select id from pole where libelle='VIE LOCALE')), (select currval('s_adresse')), true, null , 0);
+			]]>
+        </sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="init_app_user">
+        <sql dbms="postgresql">
+            <![CDATA[
+				insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'katka74','KATOA','Katiana','katiana.katoa@ville-noumea.nc','24.49.84', (select id from service where libelle_court='CAB' and direction = (select id from direction where libelle_court='CAB' and pole=(select id from pole where libelle='SECRETARIAT GENERAL'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'raide95','RAINAL','Deborah','deborah.rainal@ville-noumea.nc','27.31.15', (select id from service where libelle_court='CAB' and direction = (select id from direction where libelle_court='CAB' and pole=(select id from pole where libelle='SECRETARIAT GENERAL'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'guian87','GUIEYSSE','Angela','angela.guieysse@ville-noumea.nc','24.67.31', (select id from service where libelle_court='COM' and direction = (select id from direction where libelle_court='COM' and pole=(select id from pole where libelle='SECRETARIAT GENERAL'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'macch70','CHARLES','Christelle','christelle.charles@ville-noumea.nc','24.67.31', (select id from service where libelle_court='COM' and direction = (select id from direction where libelle_court='COM' and pole=(select id from pole where libelle='SECRETARIAT GENERAL'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'couro62','PINTIAU','Rolande','rolande.pintiau@ville-noumea.nc','24.07.89', (select id from service where libelle_court='SG' and direction = (select id from direction where libelle_court='SG' and pole=(select id from pole where libelle='SECRETARIAT GENERAL'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'rezan69','REZEAU','Angelique','angelique.rezeau@ville-noumea.nc','27.07.30', (select id from service where libelle_court='SAC' and direction = (select id from direction where libelle_court='SG' and pole=(select id from pole where libelle='SECRETARIAT GENERAL'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'decau77','DECKMIN','Aurelie','aurelie.deckmin@ville-noumea.nc','27.07.13', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DEP' and pole=(select id from pole where libelle='AMENAGEMENT'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'desno82','DESMAZURES','Noemie','noemie.desmazures@ville-noumea.nc','27.07.61', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DEP' and pole=(select id from pole where libelle='AMENAGEMENT'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'dasem82','DA SILVA','Emilie','emilie.dasilva@ville-noumea.nc','27.98.10', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DU' and pole=(select id from pole where libelle='AMENAGEMENT'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'brona72','BROUDISSOU','Natacha','natacha.broudissou@ville-noumea.nc','27.98.10', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DACP' and pole=(select id from pole where libelle='AMENAGEMENT'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'curir63','CUREAU','Irene','irene.cureau@ville-noumea.nc','27.07.10', (select id from service where libelle_court='SAC' and direction = (select id from direction where libelle_court='DACP' and pole=(select id from pole where libelle='AMENAGEMENT'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'hnaan82','HNASSIL','Angeline','angeline.hnassil@ville-noumea.nc','27.07.10', (select id from service where libelle_court='SAC' and direction = (select id from direction where libelle_court='SCAF' and pole=(select id from pole where libelle='AMENAGEMENT'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'sangi69','SANTINO ','Gilles','gilles.santino@ville-noumea','27.07.39', (select id from service where libelle_court='SAC' and direction = (select id from direction where libelle_court='SCAF' and pole=(select id from pole where libelle='AMENAGEMENT'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'vaiem74','VAITULUKINA','Emilio','emilio.vaitulukina@ville-noumea.nc','27.07.39', (select id from service where libelle_court='SAC' and direction = (select id from direction where libelle_court='SCAF' and pole=(select id from pole where libelle='AMENAGEMENT'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'marsv63','MARTINETTI','Svanilda','svanilda.martinetti@ville-noumea.nc','27.07.38', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DF' and pole=(select id from pole where libelle='RESSOURCE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'matem95','MATARII','Emmanuelle','emmanuelle.matarii@ville-noumea.nc','27.07.38', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DF' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'guyha83','GUYARD','Harmony','harmony.guyard@ville-noumea.nc','23.22.47', (select id from service where libelle_court='SIG' and direction = (select id from direction where libelle_court='SIG' and pole=(select id from pole where libelle='RESSOURCE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'robka65','MOUNOUSSAMY','Katrina','katrina.mounoussamy@ville-noumea.nc','23.22.47', (select id from service where libelle_court='SIG' and direction = (select id from direction where libelle_court='SIG' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'craje60','CRASSOUS','Jean-claude','jean-claude.crassous@ville-noumea.nc','27.07.36', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DSI' and pole=(select id from pole where libelle='RESSOURCE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'boust75','BOUFENECHE','Stephanie','stephanie.boufeneche@ville-noumea.nc','27.07.36', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DSI' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'ethla90','MARIOTTI','Laura','laura.mariotti@ville-noumea.nc','27.07.36', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DSI' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'mahvi72','MAHY','Vincent','vincent.mahy@ville-noumea.nc','27.07.18', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DRH' and pole=(select id from pole where libelle='RESSOURCE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'prasy75','PRAPOTNICH','Sulvia','sylvia.prapotnich@ville-noumea.nc','27.07.17', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DRH' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'potca70','ROY','Catherine','catherine.roy@ville-noumea.nc','27.31.15', (select id from service where libelle_court='CCM' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'honar57','HONDA','Arielle','arielle.honda@ville-noumea.nc','27.31.15', (select id from service where libelle_court='CCM' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'mautu70','MAUGATEAU','Tuipoila','tuipoila.maugateau@ville-noumea.nc','27.98.21', (select id from service where libelle_court='SJC' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'nicbe71','NICHOLLS','Beatrice','beatrice.nicholls@ville-noumea.nc','27.98.21', (select id from service where libelle_court='SJC' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'konsa80','BURET','Sabrina','sabrina.buret@ville-noumea.nc','27.31.15', (select id from service where libelle_court='SC' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'tanau90','TANAKA','Audrey','audrey.tanaka@ville-noumea.nc','27.31.15', (select id from service where libelle_court='SC' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'wilga59','WILLEMOT','Gaetan','gaetan.willemot@ville-noumea.nc','27.32.85', (select id from service where libelle_court='SMG' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 0);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 1);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'poima67','WAMYTAN','Marie-josette','marie-josette.wamytan@ville-noumea.nc','27.32.85', (select id from service where libelle_court='SMG-SAC' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'sielo89','SIEGLER','Loic','loic.siegler@ville-noumea.nc','27.32.85', (select id from service where libelle_court='SMG-SAC' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'matka73','MATTEI','Karl','karl.mattei@ville-noumea.nc','27.32.85', (select id from service where libelle_court='SMG-SAC' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'avobr81','AVOCK DIT APOCK','Bruno','bruno.avockditapock@ville-noumea.nc','27.32.85', (select id from service where libelle_court='SMG-SA' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 1);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'bluol70','BLUM','Oliva','oliva.blum@ville-noumea.nc','27.32.85', (select id from service where libelle_court='SMG-SA' and direction = (select id from direction where libelle_court='DAJM' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 1);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'mardi63','MARTIN','Didier','didier.martin@ville-noumea.nc','25.07.85', (select id from service where libelle_court='SL' and direction = (select id from direction where libelle_court='DPM' and pole=(select id from pole where libelle='SECURITE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'flada68','FLAMENT','Dany','dany.flament@ville-noumea.nc','25.23.23', (select id from service where libelle_court='SL' and direction = (select id from direction where libelle_court='DPM' and pole=(select id from pole where libelle='SECURITE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'komma82','KOMON','Marie','marie.komon@ville-noumea.nc','27.78.61', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DRS' and pole=(select id from pole where libelle='SECURITE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'velva77','LUCIEN-ESPARBES','Valerie','valerie.lucien-esparbes@ville-noumea.nc','27.78.61', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DRS' and pole=(select id from pole where libelle='SECURITE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'teima55','TEIN-BOINOU','Marie-antoinette','marie.tein-boinou@ville-noumea.nc','24.38.19', (select id from service where libelle_court='CLP NEA' and direction = (select id from direction where libelle_court='DSIS' and pole=(select id from pole where libelle='SECURITE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'malmi57','LUCAS','Michele','michele.lucas@ville-noumea.nc','44.90.14', (select id from service where libelle_court='CM NMDIE' and direction = (select id from direction where libelle_court='DSIS' and pole=(select id from pole where libelle='SECURITE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'belau83','BELPADROME','Audrey','audrey.belpadrome@ville-noumea.nc','24.38.19', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DSIS' and pole=(select id from pole where libelle='SECURITE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'fogal87','FOGLIANI ','Alize','alize.fogliani@ville-noumea.nc','23.26.50', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DCPR' and pole=(select id from pole where libelle='VIE LOCALE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'trian81','TRINOME ','Anne-laure','anne-laure.trinome@ville-noumea.nc','27.98.07', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DPV' and pole=(select id from pole where libelle='VIE LOCALE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'dari72','LEON','Miliaiti','miliaiti.leon@ville-noumea.nc','23.29.30', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DPV' and pole=(select id from pole where libelle='VIE LOCALE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'douci81','HNADRIANE','Cindy','cindy.hnadriane@ville-noumea.nc','27.07.35', (select id from service where libelle_court='SVC' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'bauna77','BAUDOUIN','Nanci','nanci.baudouin@ville-noumea.nc','27.07.35', (select id from service where libelle_court='SVC' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'bozan85','BOZZAT','Angelo','angelo.bozzat@ville-noumea.nc','27.07.37', (select id from service where libelle_court='SE' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'wahmi79','WAHOULO ','Mickael','mickael.wahoulo@ville-noumea.nc','27.07.37', (select id from service where libelle_court='SE' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'chapa89','CHATELIER ','Pascal','pascal.chatelier@ville-noumea.nc','27.07.37', (select id from service where libelle_court='SE' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'kadsa88','KADDOUR','Sandrine','sandrine.kaddour@ville-noumea.nc','23.26.50', (select id from service where libelle_court='SMS-SAC' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'durch74','DURAND-DI MATTEO','Chrystelle','chrystelle.durand-dimatteo@ville-noumea.nc','23.26.50', (select id from service where libelle_court='SMS-SAC' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'barco69','BARBARIN','Corinne','corinne.barbarin@ville-noumea.nc','43.22.88', (select id from service where libelle_court='SVC-SMC' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'flolu80','FLOURY','Ludovic','ludovic.floury@ville-noumea.nc','27.07.35', (select id from service where libelle_court='SVC' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'parva78','PARDO','Valerie','valerie.pardo@ville-noumea.nc','24.49.69', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'toci88','TOCQ','Isabelle','isabellle.tocq@ville-noumea.nc','24.49.69', (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'putva79','PUTAHOE','Valerie','valerie.putahoe@ville-noumea.nc','23.65.81', (select id from service where libelle_court='SVE' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,true,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'garva94','GARNIER','Vanessa','vanessa.garnier@ville-noumea.nc','23.65.81', (select id from service where libelle_court='SVE' and direction = (select id from direction where libelle_court='DVCES' and pole=(select id from pole where libelle='VIE LOCALE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'lemth83','LEMAIRE','Thomas','thomas.lemaire@agilesoft.nc',null, (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DSI' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 0);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 1);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'fauch75','FAURE','Christèle','chistele.faure@ville-noumea.nc',null, (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DSI' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 0);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 1);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+                insert into app_user(id, login, nom, prenom, email, telephone, service, poste, titulaire, actif, version) values (nextval('s_app_user'), 'apps-test','SALES','Adrien','adrien.sales@ville-noumea.nc',null, (select id from service where libelle_court='PAB' and direction = (select id from direction where libelle_court='DSI' and pole=(select id from pole where libelle='RESSOURCE'))),null,false,true,0);
+                insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 0);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 1);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 2);insert into app_user_liste_role(id, app_user, liste_role) values (nextval('s_app_user_liste_role'), currval('s_app_user'), 3);
+			]]>
+        </sql>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_enum_etat_demande">
+        <insert tableName="enum_etat_demande">
+            <column name="name" value="EN_ATTENTE_RECEPTION"/>
+        </insert>
+        <insert tableName="enum_etat_demande">
+            <column name="name" value="TERMINE"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_enum_etat_commande_service_valide">
+        <insert tableName="enum_etat_commande_service">
+            <column name="name" value="VALIDE"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_commande_date_validation_et_user">
+        <addColumn tableName="commande">
+            <column name="date_validation_commande" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="validation_user" type="VARCHAR(200)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_observation_article">
+        <addColumn tableName="article">
+            <column name="observation" type="VARCHAR(4000)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="insert_enum_etat_demande_annule">
+        <insert tableName="enum_etat_demande">
+            <column name="name" value="ANNULE"/>
+        </insert>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="maj_email_from">
+        <update tableName="config">
+            <column name="valeur" value="appock-ne-pas-repondre@ville-noumea.nc"/>
+            <where>cle='DEFAULT_FROM_EMAIL_ADDRESS'</where>
+        </update>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="add_column_commentaire_commande_service">
+        <addColumn tableName="commande_service">
+            <column name="commentaire" type="VARCHAR(4000)"/>
+        </addColumn>
+    </changeSet>
+
+
+    <changeSet author="AgileSoft.NC" id="add_column_reference_article_stock">
+        <addColumn tableName="article">
+            <column name="reference_article_stock" type="VARCHAR(200)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet author="AgileSoft.NC" id="tag1.04.00">
+        <tagDatabase tag="1.04.00"/>
+    </changeSet>
+</databaseChangeLog>

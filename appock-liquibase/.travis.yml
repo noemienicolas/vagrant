@@ -1,0 +1,46 @@
+sudo: required
+language: java
+cache:
+  directories:
+  - ".autoconf"
+  - "$HOME/.m2"
+jdk:
+- oraclejdk8
+services: postgresql
+addons:
+  postgresql: 9.3
+before_install:
+- env
+- export postgresql_version=42.1.3
+- export liquibase_version=3.5.1
+- export schemacrawler_version=14.16.03
+- export JAVA_OPTS="-Xmx2560m -XX:-UseGCOverheadLimit"
+- echo $JAVA_OPTS
+- echo "downloading and installing liquibase ${liquibase_version}"
+- wget https://github.com/liquibase/liquibase/releases/download/liquibase-parent-${liquibase_version}/liquibase-${liquibase_version}-bin.tar.gz
+  -P /tmp
+- sudo mkdir /opt/liquibase-${liquibase_version}
+- sudo tar zxvf /tmp/liquibase-${liquibase_version}-bin.tar.gz -C /opt/liquibase-${liquibase_version}
+- sudo ln -s /opt/liquibase-${liquibase_version} /opt/liquibase
+- export PATH=$PATH:/opt/liquibase-${liquibase_version}
+- liquibase --version
+- echo "downloading and installing postgres ${postgresql_version} driver."
+- wget http://central.maven.org/maven2/org/postgresql/postgresql/${postgresql_version}/postgresql-${postgresql_version}.jar
+- sudo cp postgresql-${postgresql_version}.jar /opt/liquibase-${liquibase_version}/lib/
+- echo "downloading and installing SchemaCrawler"
+- wget https://github.com/adriens/schemacrawler-deb/releases/download/${schemacrawler_version}/schemacrawler-deb_${schemacrawler_version}_all.deb
+- sudo dpkg -i schemacrawler-deb_${schemacrawler_version}_all.deb
+- sudo mv /opt/schemacrawler-${schemacrawler_version}/additional-lints/schemacrawler-additional-lints-*.jar
+  /opt/schemacrawler-${schemacrawler_version}/lib
+- echo "deploying appock database."
+- dropdb --if-exists appock
+- psql -c 'create database appock;' -U postgres
+- cd appock
+- liquibase --driver=org.postgresql.Driver --username=postgres --url=jdbc:postgresql:appock
+  --defaultSchemaName=public --changeLogFile=db.changelog.xml --logLevel=debug  update
+- cd ..
+install:
+- mvn exec:exec
+notifications:
+  slack:
+    secure: lbfGaLM0BbP/8unWI24VqLSLLntqhOJHMZCRFXG2AHUCDW6R7/qExySinijacgOoCq4rBGrpOECbce1BGdbQQoMF6BkMikD4IJGeAOJnG5+tKMoYoy0q6Ja8O4q+yCScpwtbzeSIqqhMWcPuEVpiodJAVGdY1+1DKcihEbZ1k5Ds8ck/uhPjOi5V0dygxAxQ7CaFgglw2rl81+NmekjRXmZmN28t2RXr7LLVrgH2ydLvJwc842K5ftPDi5SrxMVD+WHgmtTbGXiwUBb2JMVkPTNANxD2NcsbkgKTM7yGoycS8ABHsqodYEVd32Bdzm1zueUHh7HPSN4FSzcKTQcS2z7wv7tj1gKwxR5IDg0evKR10E0vXrOGCmLACkVWj4SKP+i8zjj9cbPQ/892FU6YIpgIuYQGw+Nt400JHpBNHMNqp9eMH7dWK/M4to908MysVsoDr/y89P0thm4B5by87GbrYChEb5HVGh1pAsWiLBS0QntFkmyttqYZIC+EIhh4x/M5hDXQVKjmcXsD4Os5D0omvpiKnrOyJ2QRlwFzRO99EqkLH0QQPk33EJcS4+yxPN3vl7MRDjiHBsdQ5BnBsKXn4/+5ZQkiOUdP3oBDKzFJyAekU8GRJ6CP5IwlriwyfR9pd7jsHEVmZwFIN7DUKyJCDc6/RtiwPtzxvG1UoEM=
