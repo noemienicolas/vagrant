@@ -11,10 +11,10 @@ sudo systemctl start postgresql
 sudo systemctl enable postgresql
 
 #on modifie le MDP
-sudo -u postgres psql
-alter user postgres password 'postgres';
-CREATE ROLE adminpg LOGIN SUPERUSER INHERIT CREATEDB NOCREATEROLE NOREPLICATION;
-\q
+#sudo -u postgres psql
+#alter user postgres password 'postgres';
+#CREATE ROLE adminpg LOGIN SUPERUSER INHERIT CREATEDB NOCREATEROLE NOREPLICATION;
+#\q
 
 
 

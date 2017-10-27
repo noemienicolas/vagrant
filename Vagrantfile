@@ -75,5 +75,4 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "scriptInstallLiquibase.sh"
   config.vm.provision "shell", path: "scriptInstallPostgres.sh"
   config.vm.provision "shell", path: "scriptMAJPath.sh"
-  config.vm.provision "shell", path: "dumpPostgres.sh"
 end
