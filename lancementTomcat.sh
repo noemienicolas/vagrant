@@ -21,7 +21,7 @@ sudo wget -P /vagrant/apache-tomcat-7.0.59/webapps https://github.com/DSI-Ville-
 #on lance le tomcat
 cd /vagrant/apache-tomcat-7.0.59/
 #./startTomcat.sh
-./bin/startup.sh
+sudo ./bin/startup.sh
 
 
 
